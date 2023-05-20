@@ -37,8 +37,15 @@ class CheckerBoard(QWidget):
                     if (x + y) % 2 == 0:
                         self.board[1 - self.my_color][x][y] = 1
 
+        # 最开始轮到我方走棋
+        self.who_turn = my_color
+
         # 画出棋盘
         self.ui_init()
+
+        self.startButton = self.ui.startButton
+        self.startButton.clicked.connect(self.click_startButton)
+
 
     def ui_init(self):
         for i in range(self.width_num):
@@ -52,14 +59,18 @@ class CheckerBoard(QWidget):
                     pix = QPixmap('../images/black_block.png')
                 else:
                     pix = QPixmap('../images/white_block.png')
-
                 assert pix is not None, "图像出现问题"
                 label.setPixmap(pix)
                 label.setScaledContents(True)
                 label.repaint()
 
 
-    def check_bound(self, color, x, y):
+
+
+    def check_bound(self, x, y):
+        return 0 <= x < self.width_num and 0 <= y < self.height_num
+
+    def check_position_can_player(self, color, x, y):
         """
         检查位置是否合法
         包括
@@ -67,17 +78,25 @@ class CheckerBoard(QWidget):
             2. 新位置 x+y 是否为深色格子  只有深色格子可以行棋
             3. 新位置是否有其他棋子
         """
-        assert 0 <= x <= self.width_num and 0 <= y <= self.height_num, f"位置{x},{y}越界"
-
-        assert (x + y) % 2 == 0
-
-        assert self.board[color][x][y] != 1, f"{(x, y)}位置棋子已经有{color}棋！，不能重复下{color}棋"
-        enemy_color = 1 - color
-        assert self.board[enemy_color][x][y] != 1, f"{(x, y)}位置棋子已经有{enemy_color}棋！，不能再下{color}棋"
-
+        # assert self.checker_bound(color, x, y) == True, f"位置{x},{y}越界"
+        #
+        # assert (x + y) % 2 == 0
+        #
+        # assert self.board[color][x][y] != 1, f"{(x, y)}位置棋子已经有{color}棋！，不能重复下{color}棋"
+        # enemy_color = 1 - color
+        # assert self.board[enemy_color][x][y] != 1, f"{(x, y)}位置棋子已经有{enemy_color}棋！，不能再下{color}棋"
+        if self.check_bound(x, y):
+            return (x + y) % 2 == 0 and self.board[color][x][y] != 1 and self.board[1-color][x][y] != 1
+        else:
+            return False
 
     def player(self, color, old_x, old_y, new_x, new_y):
-        self.check_bound(color, new_x, new_y)
+        """
+        下棋
+        将新棋子挪到新位置
+        并且更新旧位置
+        """
+        assert self.check_position_can_player(color, new_x, new_y) == True, "下棋位置非法"
 
         old_label = getattr(self.ui, f"label{old_x}{old_y}")
         new_label = getattr(self.ui, f"label{new_x}{new_y}")
@@ -89,6 +108,7 @@ class CheckerBoard(QWidget):
         else:
             pix = QPixmap('../images/white_block.png')
             old_label.setPixmap(pix)
+        old_label.setScaledContents(True)
         old_label.repaint()
 
         if color == self.white_color:
@@ -97,7 +117,31 @@ class CheckerBoard(QWidget):
         else:
             pix = QPixmap('../images/black_checker.png')
             new_label.setPixmap(pix)
+        new_label.setScaledContents(True)
         new_label.repaint()
+
+    def where_can_player(self, color):
+        where = set()
+        dire = [(1,1), (1,-1), (-1,-1), (-1,1)]
+        for i in range(self.width_num):
+            for j in range(self.height_num):
+                if self.board[color][i][j] == 1:
+                    for pos in dire:
+                        if self.check_position_can_player(color, pos[0]+i, pos[1]+j):
+                            where.add((i, j))
+        return where
+
+    def click_startButton(self):
+        where = self.where_can_player(self.who_turn)
+        for (i, j) in where:
+            label = getattr(self.ui, f"label{i}{j}")
+            pix = QPixmap('../images/red.png')
+            label.setPixmap(pix)
+            label.setScaledContents(True)
+            label.repaint()
+
+
+
 
 
 if __name__ == "__main__":
