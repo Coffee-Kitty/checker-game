@@ -25,6 +25,13 @@ class CheckerBoardWidget(QWidget):
 
         self.setWindowTitle("国跳100 coffee_cat")
 
+        # 接下来是事件处理
+        self.clicked_check = (-1, -1)  # 当前点击的棋子位置
+        self.where = []  # 记录当前所有的子的 可以落子的地方并将其绘制
+        self.if_can_eat = False
+        self.eaten_list = []
+        self.history = []  # 历史记录list  用list模拟队列queue
+
     def drawBrownSolidRectangle(self, left_top: tuple, right_bottom: tuple, painter: QPainter) -> None:
         """
         画深色格子  左上角坐标(x,y) 右下角坐标(x,y)
@@ -40,6 +47,15 @@ class CheckerBoardWidget(QWidget):
         """
         # 设置矩形的填充颜色为
         painter.setBrush(QColor(174, 165, 150))  # 使用 RGB 值指定浅棕色
+        # 绘制实心矩形
+        painter.drawRect(left_top[0], left_top[1], right_bottom[0] - left_top[0], right_bottom[1] - left_top[1])
+
+    def drawaAtivateSolidRectangle(self, left_top: tuple, right_bottom: tuple, painter: QPainter) -> None:
+        """
+        画浅色格子  左上角坐标(x,y) 右下角坐标(x,y)
+        """
+        # 设置矩形的填充颜色为
+        painter.setBrush(Qt.green)
         # 绘制实心矩形
         painter.drawRect(left_top[0], left_top[1], right_bottom[0] - left_top[0], right_bottom[1] - left_top[1])
 
@@ -71,8 +87,6 @@ class CheckerBoardWidget(QWidget):
         # 创建绘图对象
         painter = QPainter(self)
 
-
-
         # 画出棋盘和棋子
         draw_board = self.board.board
 
@@ -99,6 +113,14 @@ class CheckerBoardWidget(QWidget):
                     self.draw_black_checker(int(x + self.grid_width_size / 2), int(y + self.grid_height_size / 2),
                                             int((self.grid_width_size + self.grid_height_size) / 4), painter)
 
+        if len(self.where) > 0:
+            for w in self.where:
+                print(w)
+                (x, y) = (w[0] * self.grid_width_size, w[1] * self.grid_height_size)
+                self.drawaAtivateSolidRectangle((int(x), int(y)),
+                                                (int(x + self.grid_width_size), int(y + self.grid_height_size)),
+                                                painter)
+
         # 完成绘制，释放资源
         painter.end()
 
@@ -107,17 +129,53 @@ class CheckerBoardWidget(QWidget):
             x = int(a0.pos().x() / self.grid_width_size)
             y = int(a0.pos().y() / self.grid_height_size)
             print(f"点击了位置：{(x, y)}")
+            (old_x, old_y) = self.clicked_check
 
-            # 注意坐标的转换
-            # y = int(self.board.width -1 -y)
+            self.if_can_eat, self.where, self.eaten_list = self.board.getNextAction()
 
-            # 查看此位置是否有棋子
-            if self.board.board[self.board.white_color][x][y] == 1:
-                print(f"此位置为白棋{(x,int(self.board.board_width_check_nums - 1 - y))}")
-            elif self.board.board[self.board.black_color][x][y] == 1:
-                print(f"此位置为黑棋{(x,int(self.board.board_width_check_nums - 1 - y))}")
+
+
+            # 1.如果点击的位置 能够下，那么下棋 并注意history
+            if len(self.where) > 0 and (x, y) in self.where and (x,y) in self.board.position_can_move(old_x, old_y)[1]:
+                # 更改board
+                if self.if_can_eat:
+                    self.board.eat(self.board.my_color,old_x,old_y,x,y, self.eaten_list)
+                else:
+                    self.board.player(self.board.my_color,old_x,old_y,x,y)
+                # 记录history
+                if self.board.my_color == self.board.white_color:
+                    self.history.append(("white", (old_x, old_y), (x, y)))
+                else:
+                    self.history.append(("black", (old_x, old_y), (x, y)))
+                print("history更新为" + self.history.__str__())
+                # 清空where ， clicked_check,
+                self.clicked_check = (-1, -1)
+                # 注意更改my_color  因为已经落子后，接着轮到对方下子
+                self.board.my_color = 1 - self.board.my_color
+                self.if_can_eat, self.where, self.eaten_list = self.board.getNextAction()
+                # 重绘制
+                self.repaint()
+
+                return
+
+            # 2.如果不能下，那么如果此位置是一个 本方棋子，就重新更新clicked_check
+            if self.board.board[self.board.my_color][x][y] == 1:
+                print(f"此位置为白棋{(x, int(self.board.board_width_check_nums - 1 - y))}")
+
+                self.clicked_check = (x, y)
+
+
+            # elif self.board.board[self.board.black_color][x][y] == 1:
+            #     print(f"此位置为黑棋{(x, int(self.board.board_width_check_nums - 1 - y))}")
+            #     where = self.board.position_can_move(x, y)
+            #     if len(where) > 0:
+            #         self.where = where
+            #         self.clicked_check = (x, y)
+            #         self.repaint()
+            # 3.---------------------不是一个棋子，不予理会
             else:
-                print("点击位置没有棋子")
+                print("点击位置不是本方棋子或者没有棋子")
+            self.repaint()
 
     # def resizeEvent(self, a0: QResizeEvent) -> None:
     #     # 新的窗口大小
@@ -138,7 +196,8 @@ class CheckerBoardWidget(QWidget):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    board = CheckerBoard(CheckerBoard.board_width_check_nums, CheckerBoard.board_height_check_nums, CheckerBoard.white_color)
+    board = CheckerBoard(CheckerBoard.board_width_check_nums, CheckerBoard.board_height_check_nums,
+                         CheckerBoard.white_color)
     board.show_board()
 
     checker_board_widget = CheckerBoardWidget(

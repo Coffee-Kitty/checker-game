@@ -10,8 +10,6 @@ class CheckerBoard(object):
     board_height_check_nums = 10  # 棋盘高为10   国跳100
     start_row = 4  # 每方拥有的棋子所占行数  如国跳100占据4行   国跳64占据3行
 
-
-
     # def transition_to_drawboard(self):
     #     """
     #     对于此 0，0 位置
@@ -35,6 +33,8 @@ class CheckerBoard(object):
         self.board_height_check_nums = height
         self.my_color = my_color  # 当前轮到my_color走棋
 
+        self.white_color_check = set()
+        self.black_color_check = set()
         if init_board is not None:
             self.board = init_board
         else:
@@ -45,11 +45,15 @@ class CheckerBoard(object):
                 for y in range(0, self.start_row):
                     if (x + y) % 2 == 1:
                         self.board[self.black_color][x][y] = 1
+                        self.black_color_check.add((x, y))
+            self.black_color_backward = -1
 
             for x in range(self.board_width_check_nums):
                 for y in range(self.board_height_check_nums - self.start_row, self.board_height_check_nums):
                     if (x + y) % 2 == 1:
                         self.board[self.white_color][x][y] = 1
+                        self.white_color_check.add((x, y))
+            self.white_color_backward = 1
 
     def copy(self):
         return copy.deepcopy(self)
@@ -57,13 +61,178 @@ class CheckerBoard(object):
     def __eq__(self, other):
         pass
 
-    def show_board(self):
+    def show_board(self) -> None:
         for i in range(self.board_width_check_nums):
             for j in range(self.board_height_check_nums):
                 if self.board[self.white_color][i][j] == 1:
-                    print(f"white{(i,j)}",end='\t')
+                    print(f"white{(i, j)}", end='\t')
                 elif self.board[self.black_color][i][j] == 1:
-                    print(f"black{(i,j)}",end='\t')
+                    print(f"black{(i, j)}", end='\t')
                 else:
-                    print(f"empty{(i,j)}",end='\t')
+                    print(f"empty{(i, j)}", end='\t')
             print(end='\n')
+
+    def player(self, color, x, y, new_x, new_y):
+        """
+        下棋
+        """
+        self.board[color][x][y]=0
+        self.board[color][new_x][new_y]=1
+        if color == self.white_color:
+            self.white_color_check.remove((x,y))
+            self.white_color_check.add((new_x,new_y))
+        if color == self.black_color:
+            self.black_color_check.remove((x,y))
+            self.black_color_check.add((new_x,new_y))
+
+    def eat(self, color, old_x,old_y,new_x,new_y,eaten_list):
+        self.board[color][old_x][old_y] = 0
+        self.board[color][new_x][new_y] = 1
+        if color == self.white_color:
+            self.white_color_check.remove((old_x, old_y))
+            self.white_color_check.add((new_x, new_y))
+            # 接着将被吃掉的子进行操作
+            for eat in eaten_list:
+                self.board[1 - color][eat[0]][eat[1]] = 0
+                self.black_color_check.remove(eat)
+        if color == self.black_color:
+            self.black_color_check.remove((old_x, old_y))
+            self.black_color_check.add((new_x, new_y))
+            # 接着将被吃掉的子进行操作
+            for eat in eaten_list:
+                self.board[1-color][eat[0]][eat[1]] = 0
+                self.white_color_check.remove(eat)
+
+
+    def getNextAction(self) -> (bool, [(int, int)], [(int, int)]):
+        """
+        返回当前局面 my_color可以行棋的位置
+        及是否可以吃子
+        """
+        return self.there_can_eat()
+
+    def there_can_eat(self) -> (bool, [(int, int)], [(int, int)]):
+        """
+        返回当前局面我方是否可以吃子,如果当前局面有能够吃子的，必须吃子且吃最多
+        否则返回所有可以走的位置
+        """
+        res = []
+        if self.my_color == self.white_color:
+            for (x, y) in self.white_color_check:
+                eat_nums, end_list, eaten_list = self.position_can_move(x, y)
+                if eat_nums > 0:
+                    return True, end_list, eaten_list
+                else:
+                    res += end_list
+        else:
+            for (x, y) in self.black_color_check:
+                eat_nums, end_list, eaten_list = self.position_can_move(x, y)
+                if eat_nums > 0:
+                    return True, end_list, eaten_list
+                else:
+                    res += end_list
+
+        return False, res, []
+
+    def position_can_move(self, x, y) -> (int, [(int, int)], [(int, int)]):
+        """
+        检查棋子四个对角线
+        先遇到直接为空则直接可以下
+        若为my_color肯定不能下
+        若为1-my_color则需进一步检查是否能够跳吃
+
+        注意规则    有子可吃必须吃子
+                   能多吃子必须吃最多
+                   还有如果不是吃子，那么不能后退
+        """
+        can_eat = None
+        can_eat_nums = 0  # 默认一个子也吃不了然后搜索最大的可吃子数
+        eaten_list = None
+        un_eat = []
+        directions = [(-1, -1), (-1, 1), (1, 1), (1, -1)]
+        for direct in directions:
+            new_x = x + direct[0]
+            new_y = y + direct[1]
+            if self.check_bound(new_x, new_y):
+                # 如果新位置有己方棋子  显然该位置不能走
+                if self.board[self.my_color][new_x][new_y] == 1:
+                    continue
+
+                # 如果新位置有敌方棋子，那么需要检查是否可以吃子
+                elif self.board[1 - self.my_color][new_x][new_y] == 1:
+                    if self.if_can_eat(x, y, x + direct[0] + direct[0], y + direct[1] + direct[1]):
+                        # 已经明确可以吃子了
+                        # 可以吃子时 需要强制吃子最多
+                        can_eat_nums, can_eat, eaten_list= self.check_max_eats(x, y, x + direct[0] + direct[0],
+                                                                    y + direct[1] + direct[1])
+
+                # 如果新位置没有任何棋子  显然该位置能走
+                else:
+                    # 由于除非吃子，否则兵不能后退，所以需要抛弃掉当前位置后退的位置
+                    if self.my_color == self.white_color:
+                        # 前进后退 仅仅与y 有关  ，所以仅需比较当前颜色后退方向与目前y方向即可
+                        if self.white_color_backward != direct[1]:
+                            un_eat.append((new_x, new_y))
+                    else:
+                        if self.black_color_backward != direct[1]:
+                            un_eat.append((new_x, new_y))
+
+        if can_eat is not None:
+            return can_eat_nums, can_eat, eaten_list
+        else:
+            return 0, un_eat, []
+
+    def check_bound(self, x, y) -> bool:
+        """
+        查看棋盘是否越界
+        """
+        return 0 <= x < self.board_width_check_nums and 0 <= y < self.board_height_check_nums
+
+    def check_max_eats(self, x, y, new_x, new_y) -> (int, [(int, int)], [(int, int)]): #todo 应该修改为每一个end位置 都对应一个eaten_list才对
+        """
+        调用递归函数计算
+        从 x,y 开始 吃子
+        返回最大吃子数，及相应list
+        """
+        if not self.if_can_eat(x, y, new_x, new_y):
+            return 0, [(x, y)], []
+
+        # 否则递归此函数检查 四个方向（不能包含原来方向） 查看能否再次跳吃
+        max_eat = 1
+        end_list = [(new_x, new_y)]
+        middle_x, middle_y = int((new_x + x) / 2), int((new_y + y) / 2)
+        eaten_list = [(middle_x, middle_y)]
+
+        # end_x, end_y = new_x, new_y
+        for direct in [(-1, -1), (1, -1), (1, 1), (-1, 1)]:
+            if (new_x + direct[0] * 2, new_y + direct[1] * 2) == (x, y):
+                continue
+            else:
+                # max_eat = max(max_eat, self.check_max_eats(new_x, new_y, new_x+direct[0]*2, new_y+direct[1]*2))
+                tem_eat, tem_list, tem_eaten = self.check_max_eats(new_x, new_y, new_x + direct[0] * 2, new_y + direct[1] * 2)
+                if tem_eat > 0:
+                    if max_eat < tem_eat + 1:
+                        end_list = tem_list
+                        max_eat = tem_eat + 1
+                        eaten_list = tem_eaten
+                    elif max_eat == tem_eat + 1:
+                        end_list += tem_list
+                        eaten_list += tem_eaten
+
+        return max_eat, end_list, eaten_list
+
+    def if_can_eat(self, x, y, new_x, new_y) -> bool:
+        """
+        查看能否从  从 x,y 能否吃子到 new_x,new_y  位置仅仅相差两格
+        """
+        # 如果越界 则直接结束判断
+        if not self.check_bound(new_x, new_y):
+            return False
+        if self.board[self.my_color][new_x][new_y] != 0 or self.board[1 - self.my_color][new_x][new_y] != 0:
+            return False
+        middle_x, middle_y = int((new_x + x) / 2), int((new_y + y) / 2)
+        if not self.check_bound(middle_x, middle_y):
+            return False
+        if self.board[1 - self.my_color][middle_x][middle_y] != 1:
+            return False
+        return True

@@ -4,17 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="322d4473-901b-42b1-aaa7-3a8a965efd14" name="变更" comment="5.24&#10;重新采用 painter的形式 绘制棋盘等">
-      <change afterPath="$PROJECT_DIR$/checkers/src/main_window.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/checkers/ui/right_window.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/checkers/ui/right_window.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/checkers.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/checkers.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+    <list default="true" id="322d4473-901b-42b1-aaa7-3a8a965efd14" name="变更" comment="5.27&#10;主界面缩放等完成&#10;接着需要完成鼠标点击事件处理，计时功能，晦棋功能等">
+      <change afterPath="$PROJECT_DIR$/checkers/规则文件.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkers/src/checker_board.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/checker_board.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkers/src/checker_board_widget.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/checker_board_widget.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/ui/a.ui" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/弃用/a.ui" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/ui/checker_board.ui" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/弃用/checker_board.ui" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,19 +37,19 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ASKED_ADD_EXTERNAL_FILES": "true",
-    "ASKED_SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "ToolWindow运行.ShowToolbar": "false",
-    "last_opened_file_path": "D:/workspace/python/checkers/checkers/ui",
-    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
+    &quot;ASKED_SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;ToolWindow运行.ShowToolbar&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;D:/workspace/python/checkers/checkers/ui&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="D:\workspace\python\checkers\checkers\ui" />
@@ -101,7 +95,7 @@
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/checkers/src/checker_board_widget.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="EMULATE_TERMINAL" value="true" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
@@ -122,7 +116,7 @@
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/checkers/src/main_window.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="EMULATE_TERMINAL" value="true" />
       <option name="MODULE_MODE" value="false" />
       <option name="REDIRECT_INPUT" value="false" />
       <option name="INPUT_FILE" value="" />
@@ -170,12 +164,19 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.checker_board (1)" />
+      <item itemvalue="Python.checker_board_widget" />
+      <item itemvalue="Python.main_window" />
+      <item itemvalue="Python.right_window" />
+      <item itemvalue="Python.test" />
+    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.checker_board_widget" />
+        <item itemvalue="Python.checker_board (1)" />
         <item itemvalue="Python.main_window" />
         <item itemvalue="Python.right_window" />
-        <item itemvalue="Python.checker_board (1)" />
         <item itemvalue="Python.test" />
       </list>
     </recent_temporary>
@@ -217,7 +218,14 @@
       <option name="project" value="LOCAL" />
       <updated>1684934862349</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="5.27&#10;主界面缩放等完成&#10;接着需要完成鼠标点击事件处理，计时功能，晦棋功能等">
+      <created>1685176901457</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1685176901457</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -237,15 +245,16 @@
     <MESSAGE value="重新采用qt designer设计棋盘 并且成功显示&#10;原来动态棋盘文件为main.py&#10;现在的为checker_board.py" />
     <MESSAGE value="5.20结果" />
     <MESSAGE value="5.24&#10;重新采用 painter的形式 绘制棋盘等" />
-    <option name="LAST_COMMIT_MESSAGE" value="5.24&#10;重新采用 painter的形式 绘制棋盘等" />
+    <MESSAGE value="5.27&#10;主界面缩放等完成&#10;接着需要完成鼠标点击事件处理，计时功能，晦棋功能等" />
+    <option name="LAST_COMMIT_MESSAGE" value="5.27&#10;主界面缩放等完成&#10;接着需要完成鼠标点击事件处理，计时功能，晦棋功能等" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/checkers/src/checker_board_widget.py</url>
-          <line>105</line>
-          <option name="timeStamp" value="1" />
+          <url>file://$PROJECT_DIR$/checkers/src/checker_board.py</url>
+          <line>111</line>
+          <option name="timeStamp" value="2" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
