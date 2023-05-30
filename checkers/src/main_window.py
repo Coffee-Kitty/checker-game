@@ -37,6 +37,7 @@ class MainWindow(QMainWindow):
         self.right_widget.hei = 800
         self.right_widget.setGeometry(self.checker_board_widget.widget_width_size, 0, self.right_widget.wid,
                                       self.right_widget.hei)
+        right_ui.go_back_history_button.clicked.connect(self.go_back_history_clicked)
 
     def resizeEvent(self, a0: QResizeEvent) -> None:
 
@@ -66,6 +67,8 @@ class MainWindow(QMainWindow):
         self.right_widget.setGeometry(self.checker_board_widget.widget_width_size, 0, self.right_widget.wid,
                                       self.right_widget.hei)
 
+    def go_back_history_clicked(self):
+        self.checker_board_widget.goback_history()
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

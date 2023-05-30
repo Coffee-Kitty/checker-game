@@ -29,7 +29,7 @@ class CheckerBoardWidget(QWidget):
         self.clicked_check = (-1, -1)  # 当前点击的棋子位置
         self.where = []  # 记录当前所有的子的 可以落子的地方并将其绘制
         self.if_can_eat = False
-        self.eaten_list = []
+        self.end_list = [((int, int), [(int, int)])]
         self.history = []  # 历史记录list  用list模拟队列queue
 
     def drawBrownSolidRectangle(self, left_top: tuple, right_bottom: tuple, painter: QPainter) -> None:
@@ -115,7 +115,6 @@ class CheckerBoardWidget(QWidget):
 
         if len(self.where) > 0:
             for w in self.where:
-                print(w)
                 (x, y) = (w[0] * self.grid_width_size, w[1] * self.grid_height_size)
                 self.drawaAtivateSolidRectangle((int(x), int(y)),
                                                 (int(x + self.grid_width_size), int(y + self.grid_height_size)),
@@ -131,31 +130,37 @@ class CheckerBoardWidget(QWidget):
             print(f"点击了位置：{(x, y)}")
             (old_x, old_y) = self.clicked_check
 
-            self.if_can_eat, self.where, self.eaten_list = self.board.getNextAction()
-
 
 
             # 1.如果点击的位置 能够下，那么下棋 并注意history
-            if len(self.where) > 0 and (x, y) in self.where and (x,y) in self.board.position_can_move(old_x, old_y)[1]:
-                # 更改board
-                if self.if_can_eat:
-                    self.board.eat(self.board.my_color,old_x,old_y,x,y, self.eaten_list)
-                else:
-                    self.board.player(self.board.my_color,old_x,old_y,x,y)
-                # 记录history
-                if self.board.my_color == self.board.white_color:
-                    self.history.append(("white", (old_x, old_y), (x, y)))
-                else:
-                    self.history.append(("black", (old_x, old_y), (x, y)))
-                print("history更新为" + self.history.__str__())
-                # 清空where ， clicked_check,
-                self.clicked_check = (-1, -1)
-                # 注意更改my_color  因为已经落子后，接着轮到对方下子
-                self.board.my_color = 1 - self.board.my_color
-                self.if_can_eat, self.where, self.eaten_list = self.board.getNextAction()
-                # 重绘制
-                self.repaint()
-
+            if len(self.where) > 0 and (x, y) in self.where:
+                all_eat_situation = self.board.position_can_move(old_x, old_y)[1]
+                all_end_pos = [i[0] for i in all_eat_situation]
+                if (x, y) in all_end_pos:
+                    # 更改board
+                    who_can_eat = None
+                    if self.if_can_eat:
+                        for tmp in all_eat_situation:
+                            if tmp[0] == (x, y):
+                                who_can_eat = tmp[1]
+                        assert who_can_eat is not None, "吃子判定出错了"
+                        self.board.eat(self.board.my_color, old_x, old_y, x, y, who_can_eat)
+                    else:
+                        self.board.player(self.board.my_color, old_x, old_y, x, y)
+                    # 记录history
+                    if self.board.my_color == self.board.white_color:
+                        self.history.append(("white", (old_x, old_y), (x, y), self.if_can_eat, who_can_eat))
+                    else:
+                        self.history.append(("black", (old_x, old_y), (x, y), self.if_can_eat, who_can_eat))
+                    print("history更新为" + self.history.__str__())
+                    # 清空where ， clicked_check,
+                    self.clicked_check = (-1, -1)
+                    # 注意更改my_color  因为已经落子后，接着轮到对方下子
+                    self.board.my_color = 1 - self.board.my_color
+                    self.if_can_eat, self.end_list = self.board.getNextAction()
+                    self.where = [tem[0] for tem in self.end_list]
+                    # 重绘制
+                    self.repaint()
                 return
 
             # 2.如果不能下，那么如果此位置是一个 本方棋子，就重新更新clicked_check
@@ -163,7 +168,9 @@ class CheckerBoardWidget(QWidget):
                 print(f"此位置为白棋{(x, int(self.board.board_width_check_nums - 1 - y))}")
 
                 self.clicked_check = (x, y)
-
+                self.if_can_eat, self.end_list = self.board.getNextAction()
+                print(f"位置{x,y}可落子及对应吃子集合{self.end_list.__str__()}")
+                self.where = [tem[0] for tem in self.end_list]
 
             # elif self.board.board[self.board.black_color][x][y] == 1:
             #     print(f"此位置为黑棋{(x, int(self.board.board_width_check_nums - 1 - y))}")
@@ -177,6 +184,30 @@ class CheckerBoardWidget(QWidget):
                 print("点击位置不是本方棋子或者没有棋子")
             self.repaint()
 
+    def goback_history(self):
+        try:
+            assert len(self.history) != 0, "游戏已恢复到最开始，无法再接着恢复"
+        except Exception as e:
+            print(e.__str__())
+            print("游戏已经恢复到最开始状态，别点击啦")
+            return
+
+        color_str, (old_x, old_y), (x, y), is_eat, eaten_list = self.history.pop()
+        if color_str == "white":
+            color = self.board.white_color
+        else:
+            color = self.board.black_color
+        if not is_eat:
+            self.board.player_goback_history(color, old_x, old_y, x, y)
+        else:
+            self.board.eat_goback_history(color, old_x, old_y, x, y, eaten_list)
+        # 更改后退后 注意下棋方改变
+        self.clicked_check = (-1, -1)
+        self.board.my_color = 1 - self.board.my_color
+        self.if_can_eat, self.end_list = self.board.getNextAction()
+        self.where = [tem[0] for tem in self.end_list]
+        # 重绘制
+        self.repaint()
     # def resizeEvent(self, a0: QResizeEvent) -> None:
     #     # 新的窗口大小
     #     (new_wid, new_hei) = a0.size().width(), a0.size().height()
