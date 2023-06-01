@@ -63,13 +63,13 @@ class CheckerBoard(QWidget):
             for j in range(self.height_num):
                 label = getattr(self.ui, f"label{i}{j}")
                 if self.board[self.white_color][i][j] == 1:
-                    pix = QPixmap('../images/white_checker.png')
+                    pix = QPixmap('images/white_checker.png')
                 elif self.board[self.black_color][i][j] == 1:
-                    pix = QPixmap('../images/black_checker.png')
+                    pix = QPixmap('images/black_checker.png')
                 elif (i + j) % 2 == 0:  # i+j 是偶数则为深色格子 否则为浅色格子
-                    pix = QPixmap('../images/black_block.png')
+                    pix = QPixmap('images/black_block.png')
                 else:
-                    pix = QPixmap('../images/white_block.png')
+                    pix = QPixmap('images/white_block.png')
                 assert pix is not None, "图像出现问题"
                 label.setPixmap(pix)
                 label.setScaledContents(True)
@@ -111,19 +111,19 @@ class CheckerBoard(QWidget):
 
 
         if (old_x + old_y) % 2 == 0:  # i+j 是偶数则为深色格子 否则为浅色格子
-            pix = QPixmap('../images/black_block.png')
+            pix = QPixmap('images/black_block.png')
             old_label.setPixmap(pix)
         else:
-            pix = QPixmap('../images/white_block.png')
+            pix = QPixmap('images/white_block.png')
             old_label.setPixmap(pix)
         old_label.setScaledContents(True)
         old_label.repaint()
 
         if color == self.white_color:
-            pix = QPixmap('../images/white_checker.png')
+            pix = QPixmap('images/white_checker.png')
             new_label.setPixmap(pix)
         else:
-            pix = QPixmap('../images/black_checker.png')
+            pix = QPixmap('images/black_checker.png')
             new_label.setPixmap(pix)
         new_label.setScaledContents(True)
         new_label.repaint()
@@ -143,7 +143,7 @@ class CheckerBoard(QWidget):
         where = self.where_can_player(self.who_turn)
         for (i, j) in where:
             label = getattr(self.ui, f"label{i}{j}")
-            pix = QPixmap('../images/red.png')
+            pix = QPixmap('images/red.png')
             label.setPixmap(pix)
             label.setScaledContents(True)
             label.repaint()

@@ -10,6 +10,9 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+"""
+注意 手动进行了修改  不是right_window.ui中的样子了
+"""
 
 class Ui_Form(object):
     def setupUi(self, Form):
@@ -30,13 +33,13 @@ class Ui_Form(object):
         self.start_button.setObjectName("pushButton")
         self.horizontalLayout.addWidget(self.start_button)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.lineEdit = QtWidgets.QLineEdit(self.widget)
-        self.lineEdit.setObjectName("lineEdit")
-        self.verticalLayout.addWidget(self.lineEdit)
-        self.lineEdit_2 = QtWidgets.QLineEdit(self.widget)
-        self.lineEdit_2.setObjectName("lineEdit_2")
-        self.verticalLayout.addWidget(self.lineEdit_2)
-
+        self.time_edit = QtWidgets.QLineEdit(self.widget)
+        self.time_edit.setObjectName("lineEdit")
+        self.who_turn_edit = QtWidgets.QLineEdit(self.widget)
+        self.who_turn_edit.setObjectName("lineEdit_2")
+        # 先显示轮到谁走了，再显示计时
+        self.verticalLayout.addWidget(self.who_turn_edit)
+        self.verticalLayout.addWidget(self.time_edit)
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -45,5 +48,5 @@ class Ui_Form(object):
         Form.setWindowTitle(_translate("Form", "Form"))
         self.go_back_history_button.setText(_translate("Form", "悔棋"))
         self.start_button.setText(_translate("Form", "开始"))
-        self.lineEdit.setText(_translate("Form", "黑方计时:   "))
-        self.lineEdit_2.setText(_translate("Form", "红方计时:   "))
+        self.time_edit.setText(_translate("Form", "计时:   "))
+        self.who_turn_edit.setText(_translate("Form", ""))

@@ -4,11 +4,9 @@ import numpy as np
 
 
 class CheckerBoard(object):
-
     board_width_check_nums = 10  # 棋盘宽为10   国跳100
     board_height_check_nums = 10  # 棋盘高为10   国跳100
     start_row = 4  # 每方拥有的棋子所占行数  如国跳100占据4行   国跳64占据3行
-
 
     white_color = 0  # 白方为0
     black_color = 1  # 黑方为1
@@ -41,6 +39,10 @@ class CheckerBoard(object):
 
         self.white_color_check = set()
         self.black_color_check = set()
+        self.white_boss_check = set()  # 记录所有的王棋
+        self.black_boss_check = set()  # 记录所有的王棋
+
+
         if init_board is not None:
             self.board = init_board
         else:
@@ -77,9 +79,6 @@ class CheckerBoard(object):
                 else:
                     print(f"empty{(i, j)}", end='\t')
             print(end='\n')
-
-
-
 
     def getNextAction(self) -> (bool, [((int, int), [(int, int)])]):
         """
@@ -234,59 +233,142 @@ class CheckerBoard(object):
 
     def player(self, color, x, y, new_x, new_y):
         """
-        下棋
+        订正 需查看新位置之后能否成为王棋
         """
-        self.board[color][x][y]=0
-        self.board[color][new_x][new_y]=1
+        self.board[color][x][y] = 0
         if color == self.white_color:
-            self.white_color_check.remove((x,y))
-            self.white_color_check.add((new_x,new_y))
+            self.white_color_check.remove((x, y))
+            # 如果说白棋往 黑棋后退的方向走了一步，将会导致越界，那么说明白棋将会升级为王棋
+            if not self.check_bound(new_x, new_y+self.black_color_backward):
+                self.board[color][new_x][new_y] = 2
+                self.white_boss_check.add((new_x, new_y))
+            else:
+                self.board[color][new_x][new_y] = 1
+                self.white_color_check.add((new_x, new_y))
         if color == self.black_color:
-            self.black_color_check.remove((x,y))
-            self.black_color_check.add((new_x,new_y))
+            self.black_color_check.remove((x, y))
+            # 如果说黑棋往 白棋后退的方向走了一步，将会导致越界，那么说明黑棋将会升级为王棋
+            if not self.check_bound(new_x, new_y + self.white_color_backward):
+                self.board[color][new_x][new_y] = 2
+                self.black_color_check.add((new_x, new_y))
+            else:
+                self.board[color][new_x][new_y] = 1
+                self.black_color_check.add((new_x, new_y))
 
-    def eat(self, color, old_x,old_y,new_x,new_y,eaten_list):
+        self.my_color = 1 - self.my_color
+
+    def eat(self, color, old_x, old_y, new_x, new_y, eaten_list):
         self.board[color][old_x][old_y] = 0
         self.board[color][new_x][new_y] = 1
         if color == self.white_color:
             self.white_color_check.remove((old_x, old_y))
-            self.white_color_check.add((new_x, new_y))
+            # 如果说白棋往 黑棋后退的方向走了一步，将会导致越界，那么说明白棋将会升级为王棋
+            if not self.check_bound(new_x, new_y + self.black_color_backward):
+                self.board[color][new_x][new_y] = 2
+                self.white_boss_check.add((new_x, new_y))
+            else:
+                self.board[color][new_x][new_y] = 1
+                self.white_color_check.add((new_x, new_y))
             # 接着将被吃掉的子进行操作
             for eat in eaten_list:
                 self.board[1 - color][eat[0]][eat[1]] = 0
-                self.black_color_check.remove(eat)
-        if color == self.black_color:
+                if eat in self.black_color_check:
+                    self.black_color_check.remove(eat)
+                else:
+                    self.black_boss_check.remove(eat)
+
+        elif color == self.black_color:
             self.black_color_check.remove((old_x, old_y))
-            self.black_color_check.add((new_x, new_y))
+            # 如果说黑棋往 白棋后退的方向走了一步，将会导致越界，那么说明黑棋将会升级为王棋
+            if not self.check_bound(new_x, new_y + self.white_color_backward):
+                self.board[color][new_x][new_y] = 2
+                self.black_color_check.add((new_x, new_y))
+            else:
+                self.board[color][new_x][new_y] = 1
+                self.black_color_check.add((new_x, new_y))
             # 接着将被吃掉的子进行操作
             for eat in eaten_list:
-                self.board[1-color][eat[0]][eat[1]] = 0
-                self.white_color_check.remove(eat)
+                self.board[1 - color][eat[0]][eat[1]] = 0
+                if eat in self.white_color_check:
+                    self.white_color_check.remove(eat)
+                else:
+                    self.white_boss_check.remove(eat)
+
+        self.my_color = 1 - self.my_color
+
 
     def player_goback_history(self, color, old_x, old_y, x, y):
+        flag = False
+        if self.board[color][x][y] == 2:
+            flag = True  # 王棋
         self.board[color][x][y] = 0
-        self.board[color][old_x][old_y] = 1
-        if color == self.white_color:
-            self.white_color_check.remove((x, y))
-            self.white_color_check.add((old_x, old_y))
-        if color == self.black_color:
-            self.black_color_check.remove((x, y))
-            self.black_color_check.add((old_x, old_y))
+        if not flag:
+            self.board[color][old_x][old_y] = 1
+            if color == self.white_color:
+                self.white_color_check.remove((x, y))
+                self.white_color_check.add((old_x, old_y))
+            elif color == self.black_color:
+                self.black_color_check.remove((x, y))
+                self.black_color_check.add((old_x, old_y))
+        else:
+            self.board[color][old_x][old_y] = 2
+            if color == self.white_color:
+                self.white_boss_check.remove((x, y))
+                self.white_boss_check.add((old_x, old_y))
+            elif color == self.black_color:
+                self.black_boss_check.remove((x, y))
+                self.black_boss_check.add((old_x, old_y))
+        self.my_color = 1 - self.my_color
 
     def eat_goback_history(self, color, old_x, old_y, x, y, eaten_list):
-        self.board[color][old_x][old_y] = 1
+        """
+        首先没有考虑吃掉的棋有王棋的情况
+        """
+        flag = False
+        if self.board[color][x][y] == 2:
+            flag = True  # 王棋
         self.board[color][x][y] = 0
-        if color == self.white_color:
-            self.white_color_check.remove((x, y))
-            self.white_color_check.add((old_x, old_y))
-            # 接着将被吃掉的子进行操作 恢复即可
-            for eat in eaten_list:
-                self.board[1 - color][eat[0]][eat[1]] = 1
-                self.black_color_check.add(eat)
-        if color == self.black_color:
-            self.black_color_check.remove((x, y))
-            self.black_color_check.add((old_x, old_y))
-            # 接着将被吃掉的子进行操作
-            for eat in eaten_list:
-                self.board[1 - color][eat[0]][eat[1]] = 1
-                self.white_color_check.add(eat)
+        if not flag:
+            self.board[color][old_x][old_y] = 1
+            if color == self.white_color:
+                self.white_color_check.remove((x, y))
+                self.white_color_check.add((old_x, old_y))
+                # 接着将被吃掉的子进行操作 恢复即可
+                for eat in eaten_list:
+                    self.board[1 - color][eat[0]][eat[1]] = 1
+                    self.black_color_check.add(eat)
+            if color == self.black_color:
+                self.black_color_check.remove((x, y))
+                self.black_color_check.add((old_x, old_y))
+                # 接着将被吃掉的子进行操作
+                for eat in eaten_list:
+                    self.board[1 - color][eat[0]][eat[1]] = 1
+                    self.white_color_check.add(eat)
+        else:
+            self.board[color][old_x][old_y] = 2
+            if color == self.white_color:
+                self.white_boss_check.remove((x, y))
+                self.white_boss_check.add((old_x, old_y))
+                # 接着将被吃掉的子进行操作 恢复即可
+                for eat in eaten_list:
+                    self.board[1 - color][eat[0]][eat[1]] = 1
+                    self.black_color_check.add(eat)
+            if color == self.black_color:
+                self.black_boss_check.remove((x, y))
+                self.black_boss_check.add((old_x, old_y))
+                # 接着将被吃掉的子进行操作
+                for eat in eaten_list:
+                    self.board[1 - color][eat[0]][eat[1]] = 1
+                    self.white_color_check.add(eat)
+
+        self.my_color = 1 - self.my_color
+
+    """
+    #######################################################################################
+                                    下面对王棋引入
+                                    规定普通棋子为1，现在规定王棋为2
+                                    使用self.boss_check集合记录在线的王棋数
+    #######################################################################################
+    """
+
+

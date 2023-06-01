@@ -1,8 +1,8 @@
 import sys
 
-from PyQt5.QtCore import Qt
+from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QMouseEvent, QPaintEvent, QResizeEvent, QPainter, QColor
-from PyQt5.QtWidgets import QWidget, QApplication
+from PyQt5.QtWidgets import QWidget, QApplication, QMessageBox, QLineEdit
 
 from checkers.src.checker_board import CheckerBoard
 
@@ -10,6 +10,7 @@ from checkers.src.checker_board import CheckerBoard
 class CheckerBoardWidget(QWidget):
 
     def __init__(self, board: CheckerBoard):
+
         super().__init__()
         self.board = board
 
@@ -50,12 +51,12 @@ class CheckerBoardWidget(QWidget):
         # 绘制实心矩形
         painter.drawRect(left_top[0], left_top[1], right_bottom[0] - left_top[0], right_bottom[1] - left_top[1])
 
-    def drawaAtivateSolidRectangle(self, left_top: tuple, right_bottom: tuple, painter: QPainter) -> None:
+    def drawaAtivateSolidRectangle(self, left_top: tuple, right_bottom: tuple, painter: QPainter, color: int) -> None:
         """
         画浅色格子  左上角坐标(x,y) 右下角坐标(x,y)
         """
         # 设置矩形的填充颜色为
-        painter.setBrush(Qt.green)
+        painter.setBrush(color)
         # 绘制实心矩形
         painter.drawRect(left_top[0], left_top[1], right_bottom[0] - left_top[0], right_bottom[1] - left_top[1])
 
@@ -78,6 +79,22 @@ class CheckerBoardWidget(QWidget):
         x = center_x  # 圆心横坐标
         y = center_y  # 圆心纵坐标
         painter.drawEllipse(x - radius, y - radius, radius * 2, radius * 2)
+
+    def draw_boss_checker(self, center_x: int, center_y: int, radius: int, painter: QPainter, color: int):
+        painter.setRenderHint(QPainter.Antialiasing)  # 抗锯齿效果
+        # 设置矩形的填充颜色为
+        if color == Qt.black:
+            painter.setBrush(Qt.red)  # 黑王琪为红色
+        else:
+            painter.setBrush(Qt.green)  # 白王琪为绿色
+
+        # 绘制实心圆形
+        radius = radius  # 圆形半径
+        x = center_x  # 圆心横坐标
+        y = center_y  # 圆心纵坐标
+        painter.drawEllipse(x - radius, y - radius, radius * 2, radius * 2)
+
+
 
     def paintEvent(self, a0: QPaintEvent) -> None:
         """
@@ -112,13 +129,26 @@ class CheckerBoardWidget(QWidget):
                     (x, y) = (i * self.grid_width_size, j * self.grid_height_size)
                     self.draw_black_checker(int(x + self.grid_width_size / 2), int(y + self.grid_height_size / 2),
                                             int((self.grid_width_size + self.grid_height_size) / 4), painter)
+                elif draw_board[self.board.white_color][i][j] == 2:
+                    (x, y) = (i * self.grid_width_size, j * self.grid_height_size)
+                    self.draw_boss_checker(int(x + self.grid_width_size / 2), int(y + self.grid_height_size / 2),
+                                           int((self.grid_width_size + self.grid_height_size) / 4), painter, Qt.white)
+                elif draw_board[self.board.black_color][i][j] == 2:
+                    (x, y) = (i * self.grid_width_size, j * self.grid_height_size)
+                    self.draw_boss_checker(int(x + self.grid_width_size / 2), int(y + self.grid_height_size / 2),
+                                           int((self.grid_width_size + self.grid_height_size) / 4), painter, Qt.black)
 
         if len(self.where) > 0:
             for w in self.where:
                 (x, y) = (w[0] * self.grid_width_size, w[1] * self.grid_height_size)
-                self.drawaAtivateSolidRectangle((int(x), int(y)),
-                                                (int(x + self.grid_width_size), int(y + self.grid_height_size)),
-                                                painter)
+                if self.board.my_color == self.board.white_color:
+                    self.drawaAtivateSolidRectangle((int(x), int(y)),
+                                                    (int(x + self.grid_width_size), int(y + self.grid_height_size)),
+                                                    painter, Qt.green)
+                else:
+                    self.drawaAtivateSolidRectangle((int(x), int(y)),
+                                                    (int(x + self.grid_width_size), int(y + self.grid_height_size)),
+                                                    painter, Qt.red)
 
         # 完成绘制，释放资源
         painter.end()
@@ -130,10 +160,9 @@ class CheckerBoardWidget(QWidget):
             print(f"点击了位置：{(x, y)}")
             (old_x, old_y) = self.clicked_check
 
-
-
             # 1.如果点击的位置 能够下，那么下棋 并注意history
             if len(self.where) > 0 and (x, y) in self.where:
+                # 首先确保新点击位置为老位置的合法走子位置
                 all_eat_situation = self.board.position_can_move(old_x, old_y)[1]
                 all_end_pos = [i[0] for i in all_eat_situation]
                 if (x, y) in all_end_pos:
@@ -144,19 +173,27 @@ class CheckerBoardWidget(QWidget):
                             if tmp[0] == (x, y):
                                 who_can_eat = tmp[1]
                         assert who_can_eat is not None, "吃子判定出错了"
+                        # 这里需要进一步保证老位置为合理的吃子前位置
+                        # 强制可以吃子时必须吃子
+                        if len(who_can_eat) == 0:
+                            return
                         self.board.eat(self.board.my_color, old_x, old_y, x, y, who_can_eat)
                     else:
                         self.board.player(self.board.my_color, old_x, old_y, x, y)
-                    # 记录history
+                    # 记录history 由于已经进行了 player eat操作 my_color已经发生了改变
                     if self.board.my_color == self.board.white_color:
-                        self.history.append(("white", (old_x, old_y), (x, y), self.if_can_eat, who_can_eat))
-                    else:
                         self.history.append(("black", (old_x, old_y), (x, y), self.if_can_eat, who_can_eat))
+                    else:
+                        self.history.append(("white", (old_x, old_y), (x, y), self.if_can_eat, who_can_eat))
                     print("history更新为" + self.history.__str__())
+                    # # 重新设置计时器
+                    # self.timer = QTimer(self)
+                    # self.timer.timeout.connect(self.time_has_timeout)
+                    # self.timer.start(self.time_can_hold)  # 先设置10秒
                     # 清空where ， clicked_check,
                     self.clicked_check = (-1, -1)
                     # 注意更改my_color  因为已经落子后，接着轮到对方下子
-                    self.board.my_color = 1 - self.board.my_color
+                    # self.board.my_color = 1 - self.board.my_color # 这一个操作应该再play eat unplay中做
                     self.if_can_eat, self.end_list = self.board.getNextAction()
                     self.where = [tem[0] for tem in self.end_list]
                     # 重绘制
@@ -165,11 +202,11 @@ class CheckerBoardWidget(QWidget):
 
             # 2.如果不能下，那么如果此位置是一个 本方棋子，就重新更新clicked_check
             if self.board.board[self.board.my_color][x][y] == 1:
-                print(f"此位置为白棋{(x, int(self.board.board_width_check_nums - 1 - y))}")
+                print(f"此位置为{self.board.my_color}棋{(x, int(self.board.board_width_check_nums - 1 - y))}")
 
                 self.clicked_check = (x, y)
                 self.if_can_eat, self.end_list = self.board.getNextAction()
-                print(f"位置{x,y}可落子及对应吃子集合{self.end_list.__str__()}")
+                print(f"此时对应吃子集合{self.end_list.__str__()}")
                 self.where = [tem[0] for tem in self.end_list]
 
             # elif self.board.board[self.board.black_color][x][y] == 1:
@@ -203,7 +240,7 @@ class CheckerBoardWidget(QWidget):
             self.board.eat_goback_history(color, old_x, old_y, x, y, eaten_list)
         # 更改后退后 注意下棋方改变
         self.clicked_check = (-1, -1)
-        self.board.my_color = 1 - self.board.my_color
+        # self.board.my_color = 1 - self.board.my_color  此操作在悔棋un_player un_eat中进行
         self.if_can_eat, self.end_list = self.board.getNextAction()
         self.where = [tem[0] for tem in self.end_list]
         # 重绘制

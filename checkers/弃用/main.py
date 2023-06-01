@@ -58,13 +58,13 @@ class CheckerWidget(QWidget):
                 label = QLabel()
 
                 if self.board[self.white_color][i][j] == 1:
-                    pix = QPixmap('../images/white_checker.png')
+                    pix = QPixmap('images/white_checker.png')
                 elif self.board[self.black_color][i][j] == 1:
-                    pix = QPixmap('../images/black_checker.png')
+                    pix = QPixmap('images/black_checker.png')
                 elif (i+j) % 2 == 0:  # i+j 是偶数则为浅色格子 否则为深色格子
-                    pix = QPixmap('../images/white_block.png')
+                    pix = QPixmap('images/white_block.png')
                 else:
-                    pix = QPixmap('../images/black_block.png')
+                    pix = QPixmap('images/black_block.png')
 
                 assert pix is not None, "图像出现问题"
                 label.setPixmap(pix)
