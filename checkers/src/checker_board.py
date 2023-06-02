@@ -105,7 +105,7 @@ class CheckerBoard(object):
             return True, [tmp for tmp in eat_list if len(tmp[1]) == max_len]
         else:
             # 都不能吃子
-            return False, end_list+boss_end_list
+            return False, end_list + boss_end_list
 
     def there_boss_can_eat_or_move(self) -> (bool, [((int, int), [((int, int), bool)])]):
         """
@@ -223,7 +223,6 @@ class CheckerBoard(object):
         else:
             return 0, un_eat
 
-
     def boss_position_can_move(self, x, y) -> (bool, [((int, int), [((int, int), bool)])]):
         """
         return           (是否可吃子，[(最终位置),[((吃子位置),吃子是否为王棋)]])
@@ -232,29 +231,29 @@ class CheckerBoard(object):
         # 1. 检查四个方向，查看是否能够无视距离吃子
         flag = False
         un_eat = []
-        end_eat = None
+        end_eat = []
         directions = [(-1, -1), (-1, 1), (1, 1), (1, -1)]
         for direct in directions:
-            tmp_x, tmp_y = x+direct[0], y+direct[1]
-            while not self.check_bound(tmp_x+direct[0], tmp_y+direct[1]) and not self.check_bound(tmp_x, tmp_y):
+            tmp_x, tmp_y = x + direct[0], y + direct[1]
+            while self.check_bound(tmp_x, tmp_y) and self.check_bound(tmp_x + direct[0], tmp_y + direct[1]):
                 # 1.1如果有己方棋子  显然该方向不能走
                 if self.board[self.my_color][tmp_x][tmp_y] != 0:
                     break
                 # 1.2 如果新位置有敌方棋子，则需查看是否可以吃子
                 elif self.board[1 - self.my_color][tmp_x][tmp_y] != 0:
-                    if self.if_can_eat(tmp_x - direct[0], tmp_y - direct[1], x + direct[0], y + direct[1]):
+                    if self.if_can_eat(tmp_x - direct[0], tmp_y - direct[1], tmp_x + direct[0], tmp_y + direct[1]):
                         # 已经明确可以吃子了,返回从当前位置可以吃最大子
                         flag = True
-                        can_eat_nums, can_eat = self.check_max_eats(tmp_x - direct[0], tmp_y - direct[1], x + direct[0], y + direct[1])
+                        can_eat_nums, can_eat = self.check_max_eats(tmp_x - direct[0], tmp_y - direct[1],
+                                                                    tmp_x + direct[0], tmp_y + direct[1])
                         # 直接将吃子情况加入集合即可  因为在there_boss_can_move中才进行排序选最大
                         end_eat += can_eat
-                        break
+                    break
 
                 # 1.3如果新位置没有任何棋子  则需要接着检查
                 else:
                     un_eat.append(((tmp_x, tmp_y), []))
                     tmp_x, tmp_y = tmp_x + direct[0], tmp_y + direct[1]
-
         if flag:
             return True, end_eat
         # 否则将可以走的地方返回
@@ -279,7 +278,7 @@ class CheckerBoard(object):
         # 否则递归此函数检查 四个方向（不能包含原来方向） 查看能否再次跳吃
         max_eat = 1
         middle_x, middle_y = int((new_x + x) / 2), int((new_y + y) / 2)
-        end_list = [((new_x, new_y), [((middle_x, middle_y), self.board[1-self.my_color][middle_x][middle_y] == 2)])]
+        end_list = [((new_x, new_y), [((middle_x, middle_y), self.board[1 - self.my_color][middle_x][middle_y] == 2)])]
 
         for direct in [(-1, -1), (1, -1), (1, 1), (-1, 1)]:
             # 不可重复
@@ -291,11 +290,13 @@ class CheckerBoard(object):
                     if max_eat < tem_eat + 1:
                         max_eat = tem_eat + 1
                         for eat in tem_eaten:
-                            eat[1].append(((middle_x, middle_y), self.board[1-self.my_color][middle_x][middle_y] == 2))
+                            eat[1].append(
+                                ((middle_x, middle_y), self.board[1 - self.my_color][middle_x][middle_y] == 2))
                         end_list = tem_eaten
                     elif max_eat == tem_eat + 1:
                         for eat in tem_eaten:
-                            eat[1].append(((middle_x, middle_y), self.board[1-self.my_color][middle_x][middle_y] == 2))
+                            eat[1].append(
+                                ((middle_x, middle_y), self.board[1 - self.my_color][middle_x][middle_y] == 2))
                         end_list += tem_eaten
 
         return max_eat, end_list
@@ -396,11 +397,17 @@ class CheckerBoard(object):
             elif color == self.black_color:
                 self.black_boss_check.remove((x, y))
                 self.black_boss_check.add((old_x, old_y))
+            # 本身是王琪 需要查看是否会变成一般棋
+            # 在上面操作的基础上进行  注意！！！
+            # 不好抉择  所以将由history决定把
+
         self.my_color = 1 - self.my_color
 
     def eat(self, color, old_x, old_y, new_x, new_y, eaten_list):
+        flag = False
         # 考虑是否本身就是王琪吃子
         if self.board[color][old_x][old_y] == 2:
+            flag = True
             self.board[color][new_x][new_y] = 2
         else:
             self.board[color][new_x][new_y] = 1
@@ -408,9 +415,14 @@ class CheckerBoard(object):
 
         # 考虑吃子后能否升级为王琪
         if color == self.white_color:
-            self.white_color_check.remove((old_x, old_y))
+            if flag:
+                self.white_boss_check.remove((old_x, old_y))
+            else:
+                self.white_color_check.remove((old_x, old_y))
             # 如果说白棋往 黑棋后退的方向走了一步，将会导致越界，那么说明白棋将会升级为王棋
             if not self.check_bound(new_x, new_y + self.black_color_backward):
+                flag = True
+            if flag:
                 self.board[color][new_x][new_y] = 2
                 self.white_boss_check.add((new_x, new_y))
             else:
@@ -424,9 +436,16 @@ class CheckerBoard(object):
                 else:
                     self.black_color_check.remove(eat)
         elif color == self.black_color:
-            self.black_color_check.remove((old_x, old_y))
+            if flag:
+                self.black_boss_check.remove((old_x, old_y))
+            else:
+                self.black_color_check.remove((old_x, old_y))
+
             # 如果说黑棋往 白棋后退的方向走了一步，将会导致越界，那么说明黑棋将会升级为王棋
             if not self.check_bound(new_x, new_y + self.white_color_backward):
+                flag = True
+
+            if flag:
                 self.board[color][new_x][new_y] = 2
                 self.black_boss_check.add((new_x, new_y))
             else:
@@ -444,7 +463,8 @@ class CheckerBoard(object):
 
     def eat_goback_history(self, color, old_x, old_y, x, y, eaten_list):
         """
-        首先没有考虑吃掉的棋有王棋的情况
+        对此应该注意
+        如果本身是王琪，  如果回退后可能变成一般棋的！！！！
         """
         flag = False
         if self.board[color][x][y] == 2:
@@ -457,15 +477,23 @@ class CheckerBoard(object):
                 self.white_color_check.add((old_x, old_y))
                 # 接着将被吃掉的子进行操作 恢复即可
                 for eat, boss_flag in eaten_list:
-                    self.board[1 - color][eat[0]][eat[1]] = 1
-                    self.black_color_check.add(eat)
+                    if boss_flag:
+                        self.board[1 - color][eat[0]][eat[1]] = 2
+                        self.black_boss_check.add(eat)
+                    else:
+                        self.board[1 - color][eat[0]][eat[1]] = 1
+                        self.black_color_check.add(eat)
             elif color == self.black_color:
                 self.black_color_check.remove((x, y))
                 self.black_color_check.add((old_x, old_y))
                 # 接着将被吃掉的子进行操作
                 for eat, boss_flag in eaten_list:
-                    self.board[1 - color][eat[0]][eat[1]] = 1
-                    self.white_color_check.add(eat)
+                    if not boss_flag:
+                        self.board[1 - color][eat[0]][eat[1]] = 1
+                        self.white_color_check.add(eat)
+                    else:
+                        self.board[1 - color][eat[0]][eat[1]] = 2
+                        self.white_boss_check.add(eat)
         else:
             self.board[color][old_x][old_y] = 2
             if color == self.white_color:
@@ -473,15 +501,27 @@ class CheckerBoard(object):
                 self.white_boss_check.add((old_x, old_y))
                 # 接着将被吃掉的子进行操作 恢复即可
                 for eat, boss_flag in eaten_list:
-                    self.board[1 - color][eat[0]][eat[1]] = 1
-                    self.black_color_check.add(eat)
+                    if boss_flag:
+                        self.board[1 - color][eat[0]][eat[1]] = 2
+                        self.black_boss_check.add(eat)
+                    else:
+                        self.board[1 - color][eat[0]][eat[1]] = 1
+                        self.black_color_check.add(eat)
             elif color == self.black_color:
                 self.black_boss_check.remove((x, y))
                 self.black_boss_check.add((old_x, old_y))
                 # 接着将被吃掉的子进行操作
                 for eat, boss_flag in eaten_list:
-                    self.board[1 - color][eat[0]][eat[1]] = 1
-                    self.white_color_check.add(eat)
+                    if boss_flag:
+                        self.board[1 - color][eat[0]][eat[1]] = 2
+                        self.white_boss_check.add(eat)
+                    else:
+                        self.board[1 - color][eat[0]][eat[1]] = 1
+                        self.white_color_check.add(eat)
+            # 本身是王琪 需要查看是否会变成一般棋
+            # 在上面操作的基础上进行  注意！！！
+            # 不好抉择  所以将由history决定把
+
 
         self.my_color = 1 - self.my_color
 

@@ -32,6 +32,7 @@ class CheckerBoardWidget(QWidget):
         self.if_can_eat = False
         self.end_list = [((int, int), [(int, int)])]
         self.history = []  # 历史记录list  用list模拟队列queue
+        self.transition_history = []   # 记录王棋转变之际
 
     def drawBrownSolidRectangle(self, left_top: tuple, right_bottom: tuple, painter: QPainter) -> None:
         """
@@ -158,12 +159,15 @@ class CheckerBoardWidget(QWidget):
             x = int(a0.pos().x() / self.grid_width_size)
             y = int(a0.pos().y() / self.grid_height_size)
             print(f"点击了位置：{(x, y)}")
+            print(f"where{self.where}")
+            print(f"if_can_eat{self.if_can_eat}")
             (old_x, old_y) = self.clicked_check
 
             # 1.如果点击的位置 能够下，那么下棋 并注意history
             if len(self.where) > 0 and (x, y) in self.where:
+                transition_to_boss = False
                 # 首先确保新点击位置为老位置的合法走子位置
-                if self.board.board[self.board.my_color][x][y] == 2:
+                if self.board.board[self.board.my_color][old_x][old_y] == 2:
                     all_eat_situation = self.board.boss_position_can_move(old_x, old_y)[1]
                 else:
                     all_eat_situation = self.board.position_can_move(old_x, old_y)[1]
@@ -181,13 +185,19 @@ class CheckerBoardWidget(QWidget):
                         if len(who_can_eat) == 0:
                             return
                         self.board.eat(self.board.my_color, old_x, old_y, x, y, who_can_eat)
+                        if self.board.board[1-self.board.my_color][x][y] == 2:
+                            transition_to_boss = True
                     else:
                         self.board.player(self.board.my_color, old_x, old_y, x, y)
+                        if self.board.board[1-self.board.my_color][x][y] == 2:
+                            transition_to_boss = True
                     # 记录history 由于已经进行了 player eat操作 my_color已经发生了改变
                     if self.board.my_color == self.board.white_color:
                         self.history.append(("black", (old_x, old_y), (x, y), self.if_can_eat, who_can_eat))
                     else:
                         self.history.append(("white", (old_x, old_y), (x, y), self.if_can_eat, who_can_eat))
+                    if transition_to_boss:
+                        self.transition_history.append(len(self.history))  # 使用len做判定有问题！！# todo
                     print("history更新为" + self.history.__str__())
                     # # 重新设置计时器
                     # self.timer = QTimer(self)
@@ -248,6 +258,13 @@ class CheckerBoardWidget(QWidget):
             print("游戏已经恢复到最开始状态，别点击啦")
             return
 
+        # 需要查看是否是王棋转变之际
+        has_transit = False
+        transition_len = len(self.history)  # 使用len做判定有问题 # todo
+        if transition_len in self.transition_history:
+            self.transition_history.remove(transition_len)
+            has_transit = True
+
         color_str, (old_x, old_y), (x, y), is_eat, eaten_list = self.history.pop()
         if color_str == "white":
             color = self.board.white_color
@@ -257,6 +274,16 @@ class CheckerBoardWidget(QWidget):
             self.board.player_goback_history(color, old_x, old_y, x, y)
         else:
             self.board.eat_goback_history(color, old_x, old_y, x, y, eaten_list)
+        # 不管是怎么变得王  都要回来
+        if has_transit:
+            self.board.board[color][old_x][old_y] = 1
+            if color == self.board.white_color:
+                self.board.white_boss_check.remove((old_x, old_y))
+                self.board.white_color_check.add((old_x, old_y))
+            else:
+                self.board.black_boss_check.remove((old_x, old_y))
+                self.board.black_color_check.add((old_x, old_y))
+
         # 更改后退后 注意下棋方改变
         self.clicked_check = (-1, -1)
         # self.board.my_color = 1 - self.board.my_color  此操作在悔棋un_player un_eat中进行
