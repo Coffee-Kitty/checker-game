@@ -4,19 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="322d4473-901b-42b1-aaa7-3a8a965efd14" name="变更" comment="5.30&#10;已经可以按照规则吃子（还未考虑升级为王棋），已经可以悔棋&#10;接着还需考虑如何评判胜负，如何升级王棋，王棋吃子，还有计时功能">
+    <list default="true" id="322d4473-901b-42b1-aaa7-3a8a965efd14" name="变更" comment="6.1&#10;实现了计时器功能&#10;实现了王棋的展示&#10;还需要完成王棋的吃子规则，王棋的悔棋功能">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/images/black_block.png" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/弃用/images/black_block.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/images/black_checker.png" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/弃用/images/black_checker.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/images/red.png" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/弃用/images/red.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/images/white_block.png" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/弃用/images/white_block.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/images/white_checker.png" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/弃用/images/white_checker.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkers/src/checker_board.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/checker_board.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkers/src/checker_board_widget.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/checker_board_widget.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/src/main_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/main_window.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/ui/right_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/ui/right_window.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/弃用/checker_board.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/弃用/checker_board.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/弃用/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/弃用/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -248,7 +239,14 @@
       <option name="project" value="LOCAL" />
       <updated>1685449697315</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="6.1&#10;实现了计时器功能&#10;实现了王棋的展示&#10;还需要完成王棋的吃子规则，王棋的悔棋功能">
+      <created>1685621317491</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1685621317491</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -271,15 +269,16 @@
     <MESSAGE value="5.27&#10;主界面缩放等完成&#10;接着需要完成鼠标点击事件处理，计时功能，晦棋功能等" />
     <MESSAGE value="5.29&#10;吃子功能只能单吃&#10;多吃功能的多吃的集合并未完善" />
     <MESSAGE value="5.30&#10;已经可以按照规则吃子（还未考虑升级为王棋），已经可以悔棋&#10;接着还需考虑如何评判胜负，如何升级王棋，王棋吃子，还有计时功能" />
-    <option name="LAST_COMMIT_MESSAGE" value="5.30&#10;已经可以按照规则吃子（还未考虑升级为王棋），已经可以悔棋&#10;接着还需考虑如何评判胜负，如何升级王棋，王棋吃子，还有计时功能" />
+    <MESSAGE value="6.1&#10;实现了计时器功能&#10;实现了王棋的展示&#10;还需要完成王棋的吃子规则，王棋的悔棋功能" />
+    <option name="LAST_COMMIT_MESSAGE" value="6.1&#10;实现了计时器功能&#10;实现了王棋的展示&#10;还需要完成王棋的吃子规则，王棋的悔棋功能" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/checkers/src/checker_board_widget.py</url>
-          <line>183</line>
-          <option name="timeStamp" value="9" />
+          <line>199</line>
+          <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

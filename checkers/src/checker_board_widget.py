@@ -163,7 +163,10 @@ class CheckerBoardWidget(QWidget):
             # 1.如果点击的位置 能够下，那么下棋 并注意history
             if len(self.where) > 0 and (x, y) in self.where:
                 # 首先确保新点击位置为老位置的合法走子位置
-                all_eat_situation = self.board.position_can_move(old_x, old_y)[1]
+                if self.board.board[self.board.my_color][x][y] == 2:
+                    all_eat_situation = self.board.boss_position_can_move(old_x, old_y)[1]
+                else:
+                    all_eat_situation = self.board.position_can_move(old_x, old_y)[1]
                 all_end_pos = [i[0] for i in all_eat_situation]
                 if (x, y) in all_end_pos:
                     # 更改board
@@ -194,6 +197,9 @@ class CheckerBoardWidget(QWidget):
                     self.clicked_check = (-1, -1)
                     # 注意更改my_color  因为已经落子后，接着轮到对方下子
                     # self.board.my_color = 1 - self.board.my_color # 这一个操作应该再play eat unplay中做
+                    if self.board.check_if_my_lose():
+                        self.i_has_lost()
+                        return
                     self.if_can_eat, self.end_list = self.board.getNextAction()
                     self.where = [tem[0] for tem in self.end_list]
                     # 重绘制
@@ -201,7 +207,7 @@ class CheckerBoardWidget(QWidget):
                 return
 
             # 2.如果不能下，那么如果此位置是一个 本方棋子，就重新更新clicked_check
-            if self.board.board[self.board.my_color][x][y] == 1:
+            if self.board.board[self.board.my_color][x][y] != 0:
                 print(f"此位置为{self.board.my_color}棋{(x, int(self.board.board_width_check_nums - 1 - y))}")
 
                 self.clicked_check = (x, y)
@@ -220,6 +226,19 @@ class CheckerBoardWidget(QWidget):
             else:
                 print("点击位置不是本方棋子或者没有棋子")
             self.repaint()
+
+    def i_has_lost(self):
+        """
+        我方输掉
+        """
+        mssage = QMessageBox(self)
+        mssage.setGeometry(0, 0, 500, 500)
+        if self.board.my_color == self.board.white_color:
+            mssage.setText(f"我方white棋输，黑棋胜")
+        else:
+            mssage.setText(f"我方black棋输，白棋胜")
+        mssage.show()
+
 
     def goback_history(self):
         try:
