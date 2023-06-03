@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="322d4473-901b-42b1-aaa7-3a8a965efd14" name="变更" comment="6.2&#10;函数基本写完&#10;需要修改王棋运行时的bug即可">
+    <list default="true" id="322d4473-901b-42b1-aaa7-3a8a965efd14" name="变更" comment="6.2&#10;王琪可以正常走&#10;但是悔棋时存在少量问题，应该以回合数判定是否从王琪回退普通棋，待改正。&#10;其余大体上完全ok了。">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/src/checker_board.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/checker_board.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkers/src/checker_board_widget.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/checker_board_widget.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -253,7 +252,14 @@
       <option name="project" value="LOCAL" />
       <updated>1685679696434</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="6.2&#10;王琪可以正常走&#10;但是悔棋时存在少量问题，应该以回合数判定是否从王琪回退普通棋，待改正。&#10;其余大体上完全ok了。">
+      <created>1685707440412</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1685707440412</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -278,10 +284,23 @@
     <MESSAGE value="5.30&#10;已经可以按照规则吃子（还未考虑升级为王棋），已经可以悔棋&#10;接着还需考虑如何评判胜负，如何升级王棋，王棋吃子，还有计时功能" />
     <MESSAGE value="6.1&#10;实现了计时器功能&#10;实现了王棋的展示&#10;还需要完成王棋的吃子规则，王棋的悔棋功能" />
     <MESSAGE value="6.2&#10;函数基本写完&#10;需要修改王棋运行时的bug即可" />
-    <option name="LAST_COMMIT_MESSAGE" value="6.2&#10;函数基本写完&#10;需要修改王棋运行时的bug即可" />
+    <MESSAGE value="6.2&#10;王琪可以正常走&#10;但是悔棋时存在少量问题，应该以回合数判定是否从王琪回退普通棋，待改正。&#10;其余大体上完全ok了。" />
+    <option name="LAST_COMMIT_MESSAGE" value="6.2&#10;王琪可以正常走&#10;但是悔棋时存在少量问题，应该以回合数判定是否从王琪回退普通棋，待改正。&#10;其余大体上完全ok了。" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/checkers/src/checker_board_widget.py</url>
+          <line>208</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/checkers/src/checker_board_widget.py</url>
+          <line>164</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">
