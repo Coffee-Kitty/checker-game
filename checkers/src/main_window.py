@@ -13,7 +13,7 @@ from checkers.ui.right_window import Ui_Form
 class MainWindow(QMainWindow):
     time_can_hold = 100000  # 100秒
 
-    def __init__(self):
+    def __init__(self, init_board: CheckerBoard):
         super().__init__()
         self.startX = 0
         self.startY = 0
@@ -22,9 +22,7 @@ class MainWindow(QMainWindow):
         self.setGeometry(self.startX, self.startY, self.widget_width_size, self.widget_height_size)
 
         # 左侧是棋盘
-        self.checker_board_widget = CheckerBoardWidget(
-            board=CheckerBoard(CheckerBoard.board_width_check_nums, CheckerBoard.board_height_check_nums,
-                               CheckerBoard.white_color))
+        self.checker_board_widget = CheckerBoardWidget(board=init_board)
         self.checker_board_widget.setParent(self)
 
         # 右侧按钮
@@ -38,8 +36,8 @@ class MainWindow(QMainWindow):
         self.right_widget.setGeometry(self.checker_board_widget.widget_width_size, 0, self.right_widget.wid,
                                       self.right_widget.hei)
         self.right_ui.go_back_history_button.clicked.connect(self.go_back_history_clicked)
-
-
+        self.right_ui.change_turn_button.clicked.connect(self.change_turn_clicked)
+        self.right_ui.debug_button.clicked.connect(self.debug_log)
 
         # 计时器
         self.timer = QTimer(self)
@@ -131,11 +129,42 @@ class MainWindow(QMainWindow):
         # 并且注意记录的history的长度减一
         self.count -= 1
 
+    def change_turn_clicked(self):
+        self.checker_board_widget.change_turn()
+
+
+    def debug_log(self):
+        self.checker_board_widget.board.log()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    main = MainWindow()
+    board = CheckerBoard(CheckerBoard.board_width_check_nums, CheckerBoard.board_height_check_nums,
+                         CheckerBoard.white_color)
+    board_str ="""0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 
+0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 
+0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 
+0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
+0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 
+0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 
+0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 
+1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 
+0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 
+1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 
+0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 
+1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 
+0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 
+1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 
+1, 0, 0, 0, 1, 0, 0, 0, 0, 0, """
+
+    board = board.load_board_drawBoard(load_board=board_str)
+    main = MainWindow(board)
     main.show()
 
     sys.exit(app.exec_())

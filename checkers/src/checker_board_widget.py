@@ -321,6 +321,17 @@ class CheckerBoardWidget(QWidget):
     #     self.grid_width_size = self.widget_width_size / self.board.board_width_check_nums
     #     self.grid_height_size = self.widget_height_size / self.board.board_height_check_nums
 
+    def change_turn(self):
+        """
+        改变当前落子方
+        :return:
+        """
+        self.board.my_color = 1 - self.board.my_color
+        self.if_can_eat, self.end_list = self.board.getNextAction()
+        self.where = [tem[0] for tem in self.end_list]
+        # 重绘制
+        self.repaint()
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)

@@ -2,6 +2,8 @@ import copy
 
 import numpy as np
 
+from checkers.src.mode_enumerate import Three_Mode
+
 
 class CheckerBoard(object):
     board_width_check_nums = 10  # 棋盘宽为10   国跳100
@@ -14,20 +16,72 @@ class CheckerBoard(object):
     enemy_has_win = 2
     none_has_win = 3
 
-    # def transition_to_drawboard(self):
-    #     """
-    #     对于此 0，0 位置
-    #     由于硬性要求  需要更改为  x,y -> x,9-y
-    #     """
-    #     new_checker_board = CheckerBoard(self.width, self.height, self.my_color, None)
-    #     new_checker_board.board = np.zeros(shape=(2, self.width, self.height), dtype=np.int32)
-    #     for i in range(new_checker_board.width):
-    #         for j in range(new_checker_board.height):
-    #             if self.board[self.white_color][i][j] == 1:
-    #                 new_checker_board.board[self.white_color][i][new_checker_board.height - 1 - j] = 1
-    #             elif self.board[self.black_color][i][j] == 1:
-    #                 new_checker_board.board[self.black_color][i][new_checker_board.height - 1 - j] = 1
-    #     return new_checker_board
+    def transition_to_drawboard(self, mode: Three_Mode):
+        """
+        对于此 0，0 位置
+        由于硬性要求  需要更改为  x,y -> x,9-y
+        """
+        new_checker_board = CheckerBoard(self.board_width_check_nums, self.board_height_check_nums, self.my_color, None)
+        new_checker_board.board = np.zeros(shape=(2, self.board_width_check_nums, self.board_height_check_nums), dtype=np.int32)
+        if mode == Three_Mode.mode1_i_j_transition:
+            for i in range(self.board_width_check_nums):
+                for j in range(self.board_height_check_nums):
+                    if self.board[self.white_color][i][j] == 1:
+                        new_checker_board.board[self.white_color][i][self.board_height_check_nums-1-j] = 1
+                    elif self.board[self.white_color][i][j] == 2:
+                        new_checker_board.board[self.white_color][i][self.board_height_check_nums-1-j] = 2
+                    elif self.board[self.black_color][i][j] == 1:
+                        new_checker_board.board[self.black_color][i][self.board_height_check_nums-1-j] = 1
+                    elif self.board[self.black_color][i][j] == 2:
+                        new_checker_board.board[self.black_color][i][self.board_height_check_nums-1-j] = 2
+        elif mode == Three_Mode.mode2_OneToN_transition:
+            pass
+        elif mode == Three_Mode.mode3_ABC_transition:
+            pass
+        return new_checker_board
+
+
+    def load_board_drawBoard(self, load_board: str):
+        """
+        加载这样的board：
+        1, 0, 0, ... 10,(注意末尾有空格和换行)
+        （最后一行末尾就不要换行了）
+        请先给出white棋，再给出black棋
+        """
+        black, white = [], []
+        lines = load_board.split("\n")
+        for num, line in enumerate(lines):
+            if num >= self.board_height_check_nums:
+                tem = []
+                cur_line = line.split(", ")
+                for i, cur in enumerate(cur_line):
+                    if i >= self.board_height_check_nums:
+                        continue
+                    tem.append(int(cur))
+                black.append(tem)
+            else:
+                tem = []
+                cur_line = line.split(", ")
+                for i, cur in enumerate(cur_line):
+                    if i >= self.board_height_check_nums:
+                        continue
+                    tem.append(int(cur))
+                white.append(tem)
+
+
+        new_board = CheckerBoard(self.board_width_check_nums, self.board_height_check_nums, self.my_color, None)
+        new_board.board = np.zeros(shape=(2, self.board_width_check_nums, self.board_height_check_nums), dtype=np.int32)
+        for i in range(self.board_width_check_nums):
+            for j in range(self.board_height_check_nums):
+                if white[i][j] == 1:
+                    new_board.board[self.white_color][i][j] = 1
+                elif white[i][j] == 2:
+                    new_board.board[self.white_color][i][j] = 2
+                elif black[i][j] == 1:
+                    new_board.board[self.black_color][i][j] = 1
+                elif black[i][j] == 2:
+                    new_board.board[self.black_color][i][j] = 2
+        return  new_board
 
     def __init__(self, width: int, height: int, my_color=white_color, init_board=None):
         """
@@ -44,6 +98,16 @@ class CheckerBoard(object):
 
         if init_board is not None:
             self.board = init_board
+            for i in range(self.board_width_check_nums):
+                for j in range(self.board_height_check_nums):
+                    if self.board[self.white_color][i][j] == 1:
+                        self.white_color_check.add((i, j))
+                    elif self.board[self.white_color][i][j] == 2:
+                        self.white_boss_check.add((i, j))
+                    elif self.board[self.black_color][i][j] == 1:
+                        self.black_color_check.add((i, j))
+                    elif self.board[self.black_color][i][j] == 2:
+                        self.black_boss_check.add((i, j))
         else:
             # 如果没有提供初始棋盘 默认没开始 提供初始board
             self.board = np.zeros(shape=(2, self.board_width_check_nums, self.board_height_check_nums), dtype=np.int32)
@@ -90,7 +154,11 @@ class CheckerBoard(object):
         return           (是否可吃子，[(最终位置),[((吃子位置),吃子是否为王棋)]])
         """
         can_eat, end_list = self.there_can_eat_or_move()
-        boss_can_eat, boss_end_list = self.there_boss_can_eat_or_move()
+        try:
+            boss_can_eat, boss_end_list = self.there_boss_can_eat_or_move()
+        except Exception as e:
+            self.err_log()
+
         flag = can_eat or boss_can_eat
         if flag:
             # 存在可以吃子的
@@ -244,16 +312,19 @@ class CheckerBoard(object):
                     if self.if_can_eat(tmp_x - direct[0], tmp_y - direct[1], tmp_x + direct[0], tmp_y + direct[1]):
                         # 已经明确可以吃子了,返回从当前位置可以吃最大子
                         flag = True
-                        can_eat_nums, can_eat = self.check_max_eats(tmp_x - direct[0], tmp_y - direct[1],
-                                                                    tmp_x + direct[0], tmp_y + direct[1])
+                        can_eat_nums, can_eat = self.check_boss_max_eat(tmp_x - direct[0], tmp_y - direct[1],
+                                                                        tmp_x + direct[0], tmp_y + direct[1])
                         # 直接将吃子情况加入集合即可  因为在there_boss_can_move中才进行排序选最大
                         end_eat += can_eat
                     break
-
                 # 1.3如果新位置没有任何棋子  则需要接着检查
                 else:
                     un_eat.append(((tmp_x, tmp_y), []))
+                    # 发现了边界小bug，为了吃子判断导致无法下到边界
+                    if self.check_bound(tmp_x, tmp_y) and not self.check_bound(tmp_x + direct[0], tmp_y + direct[1]):
+                        un_eat.append(((tmp_x + direct[0], tmp_y + direct[1]), []))
                     tmp_x, tmp_y = tmp_x + direct[0], tmp_y + direct[1]
+
         if flag:
             return True, end_eat
         # 否则将可以走的地方返回
@@ -298,6 +369,61 @@ class CheckerBoard(object):
                             eat[1].append(
                                 ((middle_x, middle_y), self.board[1 - self.my_color][middle_x][middle_y] == 2))
                         end_list += tem_eaten
+
+        return max_eat, end_list
+
+    def check_boss_max_eat(self, x, y, new_x, new_y) -> (bool, [((int, int), [((int, int), bool)])]):
+        """
+            需要非常注意，boss跳吃了一个子后，之后的接着跳吃同样无视距离
+        """
+        if not self.if_can_eat(x, y, new_x, new_y):
+            return 0, [((x, y), [])]
+
+        # 否则递归此函数检查 四个方向（不能包含原来方向） 查看能否再次跳吃
+        max_eat = 1
+        middle_x, middle_y = int((new_x + x) / 2), int((new_y + y) / 2)
+        end_list = [((new_x, new_y), [((middle_x, middle_y), self.board[1 - self.my_color][middle_x][middle_y] == 2)])]
+
+        for direct in [(-1, -1), (1, -1), (1, 1), (-1, 1)]:
+            # 不可重复
+            if (new_x + direct[0] * 2, new_y + direct[1] * 2) == (x, y):
+                continue
+            else:
+                """
+                否则沿着一个方向检查，检查如果能够吃一个子，那么就接着递归check就可以
+                """
+                tmp_x, tmp_y = new_x + direct[0], new_y + direct[1]
+                can_eat_flag = False
+                """沿着此方向直到遇到第一个敌方棋子"""
+                while self.check_bound(tmp_x, tmp_y) and self.check_bound(tmp_x + direct[0], tmp_y + direct[1]) and \
+                        self.board[1 - self.my_color][tmp_x][tmp_y] == 0:
+                    tmp_x, tmp_y = tmp_x + direct[0], tmp_y + direct[1]
+                    # 如果率先遇到了我方棋子，直接没了
+                    if self.board[self.my_color][tmp_x][tmp_y] == 1:
+                        break
+
+                if self.check_bound(tmp_x, tmp_y) and self.board[self.my_color][tmp_x][tmp_y] != 1:
+                    if self.check_bound(tmp_x, tmp_y) and self.check_bound(tmp_x + direct[0],
+                                                                           tmp_y + direct[1]) and self.if_can_eat(
+                            tmp_x - direct[0], tmp_y - direct[1], tmp_x + direct[0], tmp_y + direct[1]):
+                        # 已经明确可以吃子了
+                        can_eat_flag = True
+
+                if can_eat_flag:
+                    tem_eat, tem_eaten = self.check_boss_max_eat(tmp_x - direct[0], tmp_y - direct[1],
+                                                                 tmp_x + direct[0], tmp_y + direct[1])
+                    if tem_eat > 0:
+                        if max_eat < tem_eat + 1:
+                            max_eat = tem_eat + 1
+                            for eat in tem_eaten:
+                                eat[1].append(
+                                    ((middle_x, middle_y), self.board[1 - self.my_color][middle_x][middle_y] == 2))
+                            end_list = tem_eaten
+                        elif max_eat == tem_eat + 1:
+                            for eat in tem_eaten:
+                                eat[1].append(
+                                    ((middle_x, middle_y), self.board[1 - self.my_color][middle_x][middle_y] == 2))
+                            end_list += tem_eaten
 
         return max_eat, end_list
 
@@ -522,8 +648,81 @@ class CheckerBoard(object):
             # 在上面操作的基础上进行  注意！！！
             # 不好抉择  所以将由history决定把
 
-
         self.my_color = 1 - self.my_color
+
+    def err_log(self):
+        """
+        debug使用
+        :return:
+        """
+        import os
+
+        f = None
+        print(os.getcwd())
+        if not os.path.exists('../err/err.txt'):
+            os.makedirs(os.path.dirname("../err/err.txt"), exist_ok=True)
+
+        with open("../err/err.txt", mode='w', encoding='utf-8') as ff:
+            ff.write("below are white board"+"\n")
+            ff.write("-----------------------------"+"\n")
+            ff.write("-----------------------------"+"\n")
+            ff.write("-----------------------------"+"\n")
+            for i in range(self.board_width_check_nums):
+                line = ""
+                for j in range(self.board_height_check_nums):
+                    line += str(self.board[self.white_color][i][j]) + ", "
+                line += "\n"
+                ff.write(line)
+            ff.write("below are black board"+"\n")
+            ff.write("-----------------------------"+"\n")
+            ff.write("-----------------------------"+"\n")
+            ff.write("-----------------------------"+"\n")
+            for i in range(self.board_width_check_nums):
+                line = ""
+                for j in range(self.board_height_check_nums):
+                    line += str(self.board[self.black_color][i][j]) + ", "
+                line += "\n"
+                ff.write(line)
+            ff.write("-----------------------------"+"\n")
+            ff.write("-----------------------------"+"\n")
+            ff.write("-----------------------------"+"\n")
+
+    def log(self):
+        """
+        为后续日志功能书写
+        :return:
+        """
+        import os
+
+        f = None
+        print(os.getcwd())
+        if not os.path.exists('../log/log.txt'):
+            os.makedirs(os.path.dirname("../log/log.txt"), exist_ok=True)
+
+        with open("../log/log.txt", mode='w', encoding='utf-8') as ff:
+            ff.write("below are white board"+"\n")
+            ff.write("-----------------------------"+"\n")
+            ff.write("-----------------------------"+"\n")
+            ff.write("-----------------------------"+"\n")
+            for i in range(self.board_width_check_nums):
+                line = ""
+                for j in range(self.board_height_check_nums):
+                    line += str(self.board[self.white_color][i][j]) + ", "
+                line += "\n"
+                ff.write(line)
+            ff.write("below are black board"+"\n")
+            ff.write("-----------------------------"+"\n")
+            ff.write("-----------------------------"+"\n")
+            ff.write("-----------------------------"+"\n")
+            for i in range(self.board_width_check_nums):
+                line = ""
+                for j in range(self.board_height_check_nums):
+                    line += str(self.board[self.black_color][i][j]) + ", "
+                line += "\n"
+                ff.write(line)
+            ff.write("-----------------------------"+"\n")
+            ff.write("-----------------------------"+"\n")
+            ff.write("-----------------------------"+"\n")
 
     """
     #######################################################################################

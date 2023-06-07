@@ -4,9 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="322d4473-901b-42b1-aaa7-3a8a965efd14" name="变更" comment="6.2&#10;王琪可以正常走&#10;但是悔棋时存在少量问题，应该以回合数判定是否从王琪回退普通棋，待改正。&#10;其余大体上完全ok了。">
+    <list default="true" id="322d4473-901b-42b1-aaa7-3a8a965efd14" name="变更" comment="6.3&#10;已经可以进行正常行棋，并且一次悔棋&#10;success">
+      <change afterPath="$PROJECT_DIR$/checkers/err/err.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/checkers/log/log.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/checkers/src/mode_enumerate.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkers/src/checker_board.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/checker_board.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkers/src/checker_board_widget.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/checker_board_widget.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkers/src/main_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/main_window.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkers/ui/right_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/ui/right_window.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -121,6 +127,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="mode_enumerate" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="checkers" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/checkers/src" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/checkers/src/mode_enumerate.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="right_window" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="checkers" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -142,41 +169,20 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
-      <module name="checkers" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/checkers/弃用" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/checkers/弃用/test.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
     <list>
+      <item itemvalue="Python.mode_enumerate" />
       <item itemvalue="Python.checker_board (1)" />
       <item itemvalue="Python.checker_board_widget" />
       <item itemvalue="Python.main_window" />
       <item itemvalue="Python.right_window" />
-      <item itemvalue="Python.test" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.main_window" />
+        <item itemvalue="Python.mode_enumerate" />
         <item itemvalue="Python.checker_board_widget" />
-        <item itemvalue="Python.checker_board (1)" />
         <item itemvalue="Python.right_window" />
-        <item itemvalue="Python.test" />
+        <item itemvalue="Python.checker_board (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -259,7 +265,14 @@
       <option name="project" value="LOCAL" />
       <updated>1685707440412</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="6.3&#10;已经可以进行正常行棋，并且一次悔棋&#10;success">
+      <created>1685763989327</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1685763989327</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -285,20 +298,16 @@
     <MESSAGE value="6.1&#10;实现了计时器功能&#10;实现了王棋的展示&#10;还需要完成王棋的吃子规则，王棋的悔棋功能" />
     <MESSAGE value="6.2&#10;函数基本写完&#10;需要修改王棋运行时的bug即可" />
     <MESSAGE value="6.2&#10;王琪可以正常走&#10;但是悔棋时存在少量问题，应该以回合数判定是否从王琪回退普通棋，待改正。&#10;其余大体上完全ok了。" />
-    <option name="LAST_COMMIT_MESSAGE" value="6.2&#10;王琪可以正常走&#10;但是悔棋时存在少量问题，应该以回合数判定是否从王琪回退普通棋，待改正。&#10;其余大体上完全ok了。" />
+    <MESSAGE value="6.3&#10;已经可以进行正常行棋，并且一次悔棋&#10;success" />
+    <option name="LAST_COMMIT_MESSAGE" value="6.3&#10;已经可以进行正常行棋，并且一次悔棋&#10;success" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/checkers/src/checker_board_widget.py</url>
-          <line>208</line>
-          <option name="timeStamp" value="3" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/checkers/src/checker_board_widget.py</url>
-          <line>164</line>
-          <option name="timeStamp" value="6" />
+          <line>329</line>
+          <option name="timeStamp" value="15" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
