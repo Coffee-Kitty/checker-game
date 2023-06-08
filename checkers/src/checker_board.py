@@ -285,7 +285,9 @@ class CheckerBoard(object):
                     tmp_x, tmp_y = tmp_x + direct[0], tmp_y + direct[1]
             # 发现了边界小bug，为了吃子判断导致无法下到边界
             if self.check_bound(tmp_x, tmp_y) and not self.check_bound(tmp_x + direct[0], tmp_y + direct[1]):
-                un_eat.append(((tmp_x, tmp_y), []))
+                # 如果边界没有子则可以吃
+                if self.board[self.white_color][tmp_x][tmp_y] == 0 and self.board[self.black_color][tmp_x][tmp_y] == 0:
+                    un_eat.append(((tmp_x, tmp_y), []))
 
 
         if flag:
@@ -371,10 +373,22 @@ class CheckerBoard(object):
                             tmp_x - direct[0], tmp_y - direct[1], tmp_x + direct[0], tmp_y + direct[1]):
                         # 已经明确可以吃子了
                         can_eat_flag = True
+                        # !!!!!!!!!!!!!!!!!!!!!!!!!!
+                        # !!!!!!!!!!!!!!!!!!!!!!!!!!
+                        # 有幸遇到一个环我卡！！！！！所以干脆判断新的子是否为原集合的子集，然后如果是的话game over
+                        # 详见../log/circle.txt
+                        # !!!!!!!!!!!!!!!!!!!!!!!!!!
+                        # !!!!!!!!!!!!!!!!!!!!!!!!!!
+                        # 判断是否成环
+                        for has_eaten in end_list[1]:
+                            if has_eaten[0] == (tmp_x, tmp_y):
+                                can_eat_flag = False
 
                 if can_eat_flag:
                     tem_eat, tem_eaten = self.check_boss_max_eat(tmp_x - direct[0], tmp_y - direct[1],
                                                                  tmp_x + direct[0], tmp_y + direct[1])
+
+
                     if tem_eat > 0:
                         if max_eat < tem_eat + 1:
                             max_eat = tem_eat + 1
