@@ -41,48 +41,6 @@ class CheckerBoard(object):
         return new_checker_board
 
 
-    def load_board_drawBoard(self, load_board: str):
-        """
-        加载这样的board：
-        1, 0, 0, ... 10,(注意末尾有空格和换行)
-        （最后一行末尾就不要换行了）
-        请先给出white棋，再给出black棋
-        """
-        black, white = [], []
-        lines = load_board.split("\n")
-        for num, line in enumerate(lines):
-            if num >= self.board_height_check_nums:
-                tem = []
-                cur_line = line.split(", ")
-                for i, cur in enumerate(cur_line):
-                    if i >= self.board_height_check_nums:
-                        continue
-                    tem.append(int(cur))
-                black.append(tem)
-            else:
-                tem = []
-                cur_line = line.split(", ")
-                for i, cur in enumerate(cur_line):
-                    if i >= self.board_height_check_nums:
-                        continue
-                    tem.append(int(cur))
-                white.append(tem)
-
-
-        new_board = CheckerBoard(self.board_width_check_nums, self.board_height_check_nums, self.my_color, None)
-        new_board.board = np.zeros(shape=(2, self.board_width_check_nums, self.board_height_check_nums), dtype=np.int32)
-        for i in range(self.board_width_check_nums):
-            for j in range(self.board_height_check_nums):
-                if white[i][j] == 1:
-                    new_board.board[self.white_color][i][j] = 1
-                elif white[i][j] == 2:
-                    new_board.board[self.white_color][i][j] = 2
-                elif black[i][j] == 1:
-                    new_board.board[self.black_color][i][j] = 1
-                elif black[i][j] == 2:
-                    new_board.board[self.black_color][i][j] = 2
-        return  new_board
-
     def __init__(self, width: int, height: int, my_color=white_color, init_board=None):
         """
         初始化棋盘   如果init_board不为None   则给予那时棋盘状态
@@ -95,6 +53,9 @@ class CheckerBoard(object):
         self.black_color_check = set()
         self.white_boss_check = set()  # 记录所有的王棋
         self.black_boss_check = set()  # 记录所有的王棋
+
+        self.white_color_backward = 1
+        self.black_color_backward = -1
 
         if init_board is not None:
             self.board = init_board
@@ -117,14 +78,14 @@ class CheckerBoard(object):
                     if (x + y) % 2 == 1:
                         self.board[self.black_color][x][y] = 1
                         self.black_color_check.add((x, y))
-            self.black_color_backward = -1
+
 
             for x in range(self.board_width_check_nums):
                 for y in range(self.board_height_check_nums - self.start_row, self.board_height_check_nums):
                     if (x + y) % 2 == 1:
                         self.board[self.white_color][x][y] = 1
                         self.white_color_check.add((x, y))
-            self.white_color_backward = 1
+
 
     def copy(self):
         return copy.deepcopy(self)
@@ -154,6 +115,7 @@ class CheckerBoard(object):
         return           (是否可吃子，[(最终位置),[((吃子位置),吃子是否为王棋)]])
         """
         can_eat, end_list = self.there_can_eat_or_move()
+        boss_can_eat, boss_end_list = False, []
         try:
             boss_can_eat, boss_end_list = self.there_boss_can_eat_or_move()
         except Exception as e:
@@ -320,10 +282,11 @@ class CheckerBoard(object):
                 # 1.3如果新位置没有任何棋子  则需要接着检查
                 else:
                     un_eat.append(((tmp_x, tmp_y), []))
-                    # 发现了边界小bug，为了吃子判断导致无法下到边界
-                    if self.check_bound(tmp_x, tmp_y) and not self.check_bound(tmp_x + direct[0], tmp_y + direct[1]):
-                        un_eat.append(((tmp_x + direct[0], tmp_y + direct[1]), []))
                     tmp_x, tmp_y = tmp_x + direct[0], tmp_y + direct[1]
+            # 发现了边界小bug，为了吃子判断导致无法下到边界
+            if self.check_bound(tmp_x, tmp_y) and not self.check_bound(tmp_x + direct[0], tmp_y + direct[1]):
+                un_eat.append(((tmp_x, tmp_y), []))
+
 
         if flag:
             return True, end_eat

@@ -4,15 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="322d4473-901b-42b1-aaa7-3a8a965efd14" name="变更" comment="6.3&#10;已经可以进行正常行棋，并且一次悔棋&#10;success">
-      <change afterPath="$PROJECT_DIR$/checkers/err/err.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/checkers/log/log.txt" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/checkers/src/mode_enumerate.py" afterDir="false" />
+    <list default="true" id="322d4473-901b-42b1-aaa7-3a8a965efd14" name="变更" comment="6.8&#10;突然发现王琪跳吃的规则错误，&#10;现已订正，但王棋存在问题，&#10;还有补充三种使用棋盘的方式，补充err和log日志功能，补充加载str_board能力，但是加载王棋后还是存在问题">
+      <change afterPath="$PROJECT_DIR$/checkers/src/load_board.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkers/log/log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/log/log.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkers/src/checker_board.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/checker_board.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/src/checker_board_widget.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/checker_board_widget.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkers/src/main_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/main_window.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/checkers/ui/right_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/ui/right_window.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -272,7 +269,14 @@
       <option name="project" value="LOCAL" />
       <updated>1685763989327</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="6.8&#10;突然发现王琪跳吃的规则错误，&#10;现已订正，但王棋存在问题，&#10;还有补充三种使用棋盘的方式，补充err和log日志功能，补充加载str_board能力，但是加载王棋后还是存在问题">
+      <created>1686156861641</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1686156861641</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -299,15 +303,16 @@
     <MESSAGE value="6.2&#10;函数基本写完&#10;需要修改王棋运行时的bug即可" />
     <MESSAGE value="6.2&#10;王琪可以正常走&#10;但是悔棋时存在少量问题，应该以回合数判定是否从王琪回退普通棋，待改正。&#10;其余大体上完全ok了。" />
     <MESSAGE value="6.3&#10;已经可以进行正常行棋，并且一次悔棋&#10;success" />
-    <option name="LAST_COMMIT_MESSAGE" value="6.3&#10;已经可以进行正常行棋，并且一次悔棋&#10;success" />
+    <MESSAGE value="6.8&#10;突然发现王琪跳吃的规则错误，&#10;现已订正，但王棋存在问题，&#10;还有补充三种使用棋盘的方式，补充err和log日志功能，补充加载str_board能力，但是加载王棋后还是存在问题" />
+    <option name="LAST_COMMIT_MESSAGE" value="6.8&#10;突然发现王琪跳吃的规则错误，&#10;现已订正，但王棋存在问题，&#10;还有补充三种使用棋盘的方式，补充err和log日志功能，补充加载str_board能力，但是加载王棋后还是存在问题" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/checkers/src/checker_board_widget.py</url>
-          <line>329</line>
-          <option name="timeStamp" value="15" />
+          <url>file://$PROJECT_DIR$/checkers/src/checker_board.py</url>
+          <line>261</line>
+          <option name="timeStamp" value="25" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

@@ -7,6 +7,7 @@ from pyqt5_plugins.examplebuttonplugin import QtGui
 
 from checkers.src.checker_board import CheckerBoard
 from checkers.src.checker_board_widget import CheckerBoardWidget
+from checkers.src.load_board import load_board_drawBoard
 from checkers.ui.right_window import Ui_Form
 
 
@@ -131,7 +132,15 @@ class MainWindow(QMainWindow):
 
     def change_turn_clicked(self):
         self.checker_board_widget.change_turn()
-
+        # 然后重置定时器
+        self.timer.stop()
+        # 计时器
+        self.timer = QTimer(self)
+        # 超时绑定的槽函数
+        self.timer.timeout.connect(self.time_has_timeout)
+        # 达到指定时间触发一次的槽函数
+        self.timer.singleShot(10, self.timer_show)
+        self.timer.start(self.time_can_hold)  # 先设置10秒
 
     def debug_log(self):
         self.checker_board_widget.board.log()
@@ -140,30 +149,28 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
 
-    board = CheckerBoard(CheckerBoard.board_width_check_nums, CheckerBoard.board_height_check_nums,
-                         CheckerBoard.white_color)
-    board_str ="""0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 
-0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 
-0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 
-0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 
+    board_str = """0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 
+2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 
-0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 
-0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 
-0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 
-1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 
-0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 
-1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 
-0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 
-1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 
-0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 
-1, 0, 0, 0, 1, 0, 0, 0, 0, 0, """
+1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 
+1, 0, 0, 0, 0, 0, 0, 0, 0, 0, """
 
-    board = board.load_board_drawBoard(load_board=board_str)
+    board = load_board_drawBoard(load_board=board_str)
     main = MainWindow(board)
     main.show()
 
