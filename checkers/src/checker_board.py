@@ -274,6 +274,8 @@ class CheckerBoard(object):
                     if self.if_can_eat(tmp_x - direct[0], tmp_y - direct[1], tmp_x + direct[0], tmp_y + direct[1]):
                         # 已经明确可以吃子了,返回从当前位置可以吃最大子
                         flag = True
+                        # 首先清空用于环路检测的list
+                        self.my_list_to_detect_circle.clear()
                         can_eat_nums, can_eat = self.check_boss_max_eat(tmp_x - direct[0], tmp_y - direct[1],
                                                                         tmp_x + direct[0], tmp_y + direct[1])
                         # 直接将吃子情况加入集合即可  因为在there_boss_can_move中才进行排序选最大
@@ -337,6 +339,9 @@ class CheckerBoard(object):
 
         return max_eat, end_list
 
+    # 列表
+    my_list_to_detect_circle = []
+
     def check_boss_max_eat(self, x, y, new_x, new_y) -> (bool, [((int, int), [((int, int), bool)])]):
         """
             需要非常注意，boss跳吃了一个子后，之后的接着跳吃同样无视距离
@@ -348,6 +353,10 @@ class CheckerBoard(object):
         max_eat = 1
         middle_x, middle_y = int((new_x + x) / 2), int((new_y + y) / 2)
         end_list = [((new_x, new_y), [((middle_x, middle_y), self.board[1 - self.my_color][middle_x][middle_y] == 2)])]
+        # 如果成环，需要直接返回不能吃子
+        if (middle_x, middle_y) in self.my_list_to_detect_circle:
+            return 0, [((x, y), [])]
+        self.my_list_to_detect_circle.append((middle_x, middle_y))
 
         for direct in [(-1, -1), (1, -1), (1, 1), (-1, 1)]:
             # 不可重复
@@ -379,10 +388,19 @@ class CheckerBoard(object):
                         # 详见../log/circle.txt
                         # !!!!!!!!!!!!!!!!!!!!!!!!!!
                         # !!!!!!!!!!!!!!!!!!!!!!!!!!
-                        # 判断是否成环
-                        for has_eaten in end_list[1]:
-                            if has_eaten[0] == (tmp_x, tmp_y):
-                                can_eat_flag = False
+                        # # 判断是否成环
+                        # for has_eaten in end_list[1]:
+                        #     if has_eaten[0] == (tmp_x, tmp_y):
+                        #         can_eat_flag = False
+                        # 失败，因为递归是往深层次的，
+                        # 所以首先，对于环的检测出来后的治理
+                        # 下一步考虑，先用集合存储，然后根据集合数量是否发生变化进行
+
+                        # 为什么要检测与治理呢？防好像也还行啊
+                        # 思路为检测
+                        # 搞一个列表 进行路径的记录  然后之后不光是如果走回去了，如果也在路径中找到了那就也continue掉就行了。
+
+
 
                 if can_eat_flag:
                     tem_eat, tem_eaten = self.check_boss_max_eat(tmp_x - direct[0], tmp_y - direct[1],
