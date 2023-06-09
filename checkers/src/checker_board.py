@@ -275,7 +275,7 @@ class CheckerBoard(object):
                         # 已经明确可以吃子了,返回从当前位置可以吃最大子
                         flag = True
                         # 首先清空用于环路检测的list
-                        self.my_list_to_detect_circle.clear()
+                        self.my_list_to_detect_circle_for_boss.clear()
                         can_eat_nums, can_eat = self.check_boss_max_eat(tmp_x - direct[0], tmp_y - direct[1],
                                                                         tmp_x + direct[0], tmp_y + direct[1])
                         # 直接将吃子情况加入集合即可  因为在there_boss_can_move中才进行排序选最大
@@ -303,6 +303,9 @@ class CheckerBoard(object):
         """
         return 0 <= x < self.board_width_check_nums and 0 <= y < self.board_height_check_nums
 
+
+    my_list_to_detect_circle_for_common = []
+
     def check_max_eats(self, x, y, new_x, new_y) -> (bool, [((int, int), [((int, int), bool)])]):
         """
         调用递归函数计算
@@ -317,6 +320,10 @@ class CheckerBoard(object):
         max_eat = 1
         middle_x, middle_y = int((new_x + x) / 2), int((new_y + y) / 2)
         end_list = [((new_x, new_y), [((middle_x, middle_y), self.board[1 - self.my_color][middle_x][middle_y] == 2)])]
+        # 如果成环，需要直接返回不能吃子
+        if (middle_x, middle_y) in self.my_list_to_detect_circle_for_common:
+            return 0, [((x, y), [])]
+        self.my_list_to_detect_circle_for_common.append((middle_x, middle_y))
 
         for direct in [(-1, -1), (1, -1), (1, 1), (-1, 1)]:
             # 不可重复
@@ -340,7 +347,7 @@ class CheckerBoard(object):
         return max_eat, end_list
 
     # 列表
-    my_list_to_detect_circle = []
+    my_list_to_detect_circle_for_boss = []
 
     def check_boss_max_eat(self, x, y, new_x, new_y) -> (bool, [((int, int), [((int, int), bool)])]):
         """
@@ -354,9 +361,9 @@ class CheckerBoard(object):
         middle_x, middle_y = int((new_x + x) / 2), int((new_y + y) / 2)
         end_list = [((new_x, new_y), [((middle_x, middle_y), self.board[1 - self.my_color][middle_x][middle_y] == 2)])]
         # 如果成环，需要直接返回不能吃子
-        if (middle_x, middle_y) in self.my_list_to_detect_circle:
+        if (middle_x, middle_y) in self.my_list_to_detect_circle_for_boss:
             return 0, [((x, y), [])]
-        self.my_list_to_detect_circle.append((middle_x, middle_y))
+        self.my_list_to_detect_circle_for_boss.append((middle_x, middle_y))
 
         for direct in [(-1, -1), (1, -1), (1, 1), (-1, 1)]:
             # 不可重复
