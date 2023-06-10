@@ -16,30 +16,29 @@ class CheckerBoard(object):
     enemy_has_win = 2
     none_has_win = 3
 
-    def transition_to_drawboard(self, mode: Three_Mode):
-        """
-        对于此 0，0 位置
-        由于硬性要求  需要更改为  x,y -> x,9-y
-        """
-        new_checker_board = CheckerBoard(self.board_width_check_nums, self.board_height_check_nums, self.my_color, None)
-        new_checker_board.board = np.zeros(shape=(2, self.board_width_check_nums, self.board_height_check_nums), dtype=np.int32)
-        if mode == Three_Mode.mode1_i_j_transition:
-            for i in range(self.board_width_check_nums):
-                for j in range(self.board_height_check_nums):
-                    if self.board[self.white_color][i][j] == 1:
-                        new_checker_board.board[self.white_color][i][self.board_height_check_nums-1-j] = 1
-                    elif self.board[self.white_color][i][j] == 2:
-                        new_checker_board.board[self.white_color][i][self.board_height_check_nums-1-j] = 2
-                    elif self.board[self.black_color][i][j] == 1:
-                        new_checker_board.board[self.black_color][i][self.board_height_check_nums-1-j] = 1
-                    elif self.board[self.black_color][i][j] == 2:
-                        new_checker_board.board[self.black_color][i][self.board_height_check_nums-1-j] = 2
-        elif mode == Three_Mode.mode2_OneToN_transition:
-            pass
-        elif mode == Three_Mode.mode3_ABC_transition:
-            pass
-        return new_checker_board
-
+    # def transition_to_drawboard(self, mode: Three_Mode):
+    #     """
+    #     对于此 0，0 位置
+    #     由于硬性要求  需要更改为  x,y -> x,9-y
+    #     """
+    #     new_checker_board = CheckerBoard(self.board_width_check_nums, self.board_height_check_nums, self.my_color, None)
+    #     new_checker_board.board = np.zeros(shape=(2, self.board_width_check_nums, self.board_height_check_nums), dtype=np.int32)
+    #     if mode == Three_Mode.mode1_i_j_transition:
+    #         for i in range(self.board_width_check_nums):
+    #             for j in range(self.board_height_check_nums):
+    #                 if self.board[self.white_color][i][j] == 1:
+    #                     new_checker_board.board[self.white_color][i][self.board_height_check_nums-1-j] = 1
+    #                 elif self.board[self.white_color][i][j] == 2:
+    #                     new_checker_board.board[self.white_color][i][self.board_height_check_nums-1-j] = 2
+    #                 elif self.board[self.black_color][i][j] == 1:
+    #                     new_checker_board.board[self.black_color][i][self.board_height_check_nums-1-j] = 1
+    #                 elif self.board[self.black_color][i][j] == 2:
+    #                     new_checker_board.board[self.black_color][i][self.board_height_check_nums-1-j] = 2
+    #     elif mode == Three_Mode.mode2_OneToN_transition:
+    #         pass
+    #     elif mode == Three_Mode.mode3_ABC_transition:
+    #         pass
+    #     return new_checker_board
 
     def __init__(self, width: int, height: int, my_color=white_color, init_board=None):
         """
@@ -86,7 +85,6 @@ class CheckerBoard(object):
                         self.board[self.white_color][x][y] = 1
                         self.white_color_check.add((x, y))
 
-
     def copy(self):
         return copy.deepcopy(self)
 
@@ -112,41 +110,45 @@ class CheckerBoard(object):
         """
         返回当前局面 my_color可以行棋的位置
         及是否可以吃子
-        return           (是否可吃子，[(最终位置),[((吃子位置),吃子是否为王棋)]])
+        return 格式为：(是否可吃子，[(最终位置),[((吃子位置),吃子是否为王棋)]])
         """
-        can_eat, end_list = self.there_can_eat_or_move()
+        can_eat, end_list = False, []
         boss_can_eat, boss_end_list = False, []
+        # 这里只是为了找bug方便
         try:
+            # 调用函数返回此处普通棋子吃子落子情况
+            can_eat, end_list = self.there_can_eat_or_move()
+            # 调用函数返回此处王琪吃子落子情况
             boss_can_eat, boss_end_list = self.there_boss_can_eat_or_move()
         except Exception as e:
             self.err_log()
 
         flag = can_eat or boss_can_eat
         if flag:
-            # 存在可以吃子的
+            # 如果存在可以吃子的
             eat_list = []
             if can_eat:
                 eat_list += end_list
             if boss_can_eat:
                 eat_list += boss_end_list
-
+            # 这里是在进行王琪和普通棋子吃子最多的比较情况
             eat_len = [len(tmp[1]) for tmp in eat_list]
             max_len = max(eat_len)
+            # 返回最大吃子的情况，可能有多个
             return True, [tmp for tmp in eat_list if len(tmp[1]) == max_len]
         else:
-            # 都不能吃子
+            # 都不能吃子则返回落子情况
             return False, end_list + boss_end_list
 
     def there_boss_can_eat_or_move(self) -> (bool, [((int, int), [((int, int), bool)])]):
         """
-        :return:  返回当前局面王棋的 如果当前局面有能够吃子的，必须吃子且吃最多
-                                否则返回所有可以走的位置
-        return           (是否可吃子，[(最终位置),[((吃子位置),吃子是否为王棋)]])
+                  如果当前局面有能够吃子的，必须吃子且吃最多，否则返回所有可以走的位置
+        return    (是否可吃子，[(最终位置),[((吃子位置),吃子是否为王棋)]])
         """
+        un_eat = []  # 保存不能吃子的最后位置情况下落子
+        eat_flag = False  # 是否可吃子标识
+        if_eat = []  # 保存可以吃子时的最后位置情况
         # 遍历所有王棋集合，然后搜索王棋是否可以走
-        un_eat = []
-        eat_flag = False
-        if_eat = []
         if self.my_color == self.white_color:
             for (x, y) in self.white_boss_check:
                 eat_nums, end_list = self.boss_position_can_move(x, y)
@@ -234,6 +236,8 @@ class CheckerBoard(object):
                 elif self.board[1 - self.my_color][new_x][new_y] != 0:  # 考虑王棋为2
                     if self.if_can_eat(x, y, x + direct[0] + direct[0], y + direct[1] + direct[1]):
                         # 已经明确可以吃子了, 返回当前位置可以吃最大子
+                        # 首先清空用于环路检测的list
+                        self.my_list_to_detect_circle_for_common.clear()
                         can_eat_nums, can_eat = self.check_max_eats(x, y, x + direct[0] + direct[0],
                                                                     y + direct[1] + direct[1])
 

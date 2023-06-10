@@ -8,11 +8,12 @@ from pyqt5_plugins.examplebuttonplugin import QtGui
 from checkers.src.checker_board import CheckerBoard
 from checkers.src.checker_board_widget import CheckerBoardWidget
 from checkers.src.load_board import load_board_drawBoard
+from checkers.src.mode_enumerate import Three_Mode
 from checkers.ui.right_window import Ui_Form
 
 
 class MainWindow(QMainWindow):
-    time_can_hold = 1000000000  # 100秒
+    time_can_hold = 10000  # 1秒
 
     def __init__(self, init_board: CheckerBoard):
         super().__init__()
@@ -146,10 +147,8 @@ class MainWindow(QMainWindow):
         self.checker_board_widget.board.log()
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
 
-    board_str = """0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 
+board_str = """0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 
 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 
 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
@@ -170,7 +169,21 @@ if __name__ == "__main__":
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, """
 
-    board = load_board_drawBoard(load_board=board_str)
+
+
+
+if __name__ == "__main__":
+    app = QApplication(sys.argv)
+
+
+
+    board = load_board_drawBoard(load_board=board_str, mode=Three_Mode.mode1_i_j_transition)
+
+    # board = CheckerBoard(CheckerBoard.board_width_check_nums,
+    #                      CheckerBoard.board_height_check_nums,
+    #                      CheckerBoard.white_color,
+    #                      None)
+    # board.show_board()
     main = MainWindow(board)
     main.show()
 

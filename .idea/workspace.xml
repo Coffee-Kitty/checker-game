@@ -4,9 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="322d4473-901b-42b1-aaa7-3a8a965efd14" name="变更" comment="6.9&#10;王琪跳吃环检测已经ok，预测普通棋也是一样，但还没修改">
+    <list default="true" id="322d4473-901b-42b1-aaa7-3a8a965efd14" name="变更" comment="6.9&#10;跳吃成环bug已订正，接着书写readme文档">
+      <change afterPath="$PROJECT_DIR$/checkers/log/test_one_mode.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img_1.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img_2.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img_3.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/img_4.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkers/src/checker_board.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/checker_board.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkers/src/load_board.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/load_board.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkers/src/main_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/main_window.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -173,10 +182,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.main_window" />
+        <item itemvalue="Python.checker_board (1)" />
         <item itemvalue="Python.mode_enumerate" />
         <item itemvalue="Python.checker_board_widget" />
         <item itemvalue="Python.right_window" />
-        <item itemvalue="Python.checker_board (1)" />
       </list>
     </recent_temporary>
   </component>
@@ -294,7 +303,14 @@
       <option name="project" value="LOCAL" />
       <updated>1686272730301</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="6.9&#10;跳吃成环bug已订正，接着书写readme文档">
+      <created>1686319448972</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1686319448973</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -325,7 +341,8 @@
     <MESSAGE value="6.8&#10;王琪跳吃已经成功修改！！" />
     <MESSAGE value="6.8&#10;有幸遇到环了。。。重新出现bug" />
     <MESSAGE value="6.9&#10;王琪跳吃环检测已经ok，预测普通棋也是一样，但还没修改" />
-    <option name="LAST_COMMIT_MESSAGE" value="6.9&#10;王琪跳吃环检测已经ok，预测普通棋也是一样，但还没修改" />
+    <MESSAGE value="6.9&#10;跳吃成环bug已订正，接着书写readme文档" />
+    <option name="LAST_COMMIT_MESSAGE" value="6.9&#10;跳吃成环bug已订正，接着书写readme文档" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -339,7 +356,8 @@
     </breakpoint-manager>
     <watches-manager>
       <configuration name="PythonConfigurationType">
-        <watch expression="self.my_list_to_detect_circle" />
+        <watch expression="self.history" />
+        <watch expression="self.where" />
       </configuration>
     </watches-manager>
   </component>
