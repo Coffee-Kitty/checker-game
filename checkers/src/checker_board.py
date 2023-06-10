@@ -53,8 +53,8 @@ class CheckerBoard(object):
         self.white_boss_check = set()  # 记录所有的王棋
         self.black_boss_check = set()  # 记录所有的王棋
 
-        self.white_color_backward = 1
-        self.black_color_backward = -1
+        self.white_color_backward = -1
+        self.black_color_backward = 1
 
         if init_board is not None:
             self.board = init_board

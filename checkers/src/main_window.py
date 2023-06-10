@@ -147,26 +147,26 @@ class MainWindow(QMainWindow):
         self.checker_board_widget.board.log()
 
 
-board_str_mode1 = """0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 
-0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 
-0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 
+board_str_mode1 = """1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 
+0, 1, 0, 1, 0, 2, 0, 0, 0, 0, 
+1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 
+0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 
-0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-1, 0, 0, 0, 0, 0, 0, 0, 0, 0, """
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+0, 0, 0, 0, 0, 0, 0, 0, 0, 1, """
 
 board_str_mode2 = """white:99,87
 white_boss:9
@@ -187,16 +187,16 @@ if __name__ == "__main__":
 
 
 
-    # board = load_board_drawBoard(load_board=board_str_mode1, mode=Three_Mode.mode1_i_j_transition)
+    board_1 = load_board_drawBoard(load_board=board_str_mode1, mode=Three_Mode.mode1_i_j_transition)
     # board_2 = load_board_drawBoard(load_board=board_str_mode2, mode=Three_Mode.mode2_OneToN_transition)
-    board_3 = load_board_drawBoard(load_board=board_str_mode3, mode=Three_Mode.mode3_ABC_transition)
+    # board_3 = load_board_drawBoard(load_board=board_str_mode3, mode=Three_Mode.mode3_ABC_transition)
     # board = CheckerBoard(CheckerBoard.board_width_check_nums,
     #                      CheckerBoard.board_height_check_nums,
     #                      CheckerBoard.white_color,
     #                      None)
     # board.show_board()
     # main = MainWindow(board)
-    main = MainWindow(board_3)
+    main = MainWindow(board_1)
     main.show()
 
     sys.exit(app.exec_())

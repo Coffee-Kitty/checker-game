@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="322d4473-901b-42b1-aaa7-3a8a965efd14" name="变更" comment="6.10&#10;完工">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkers/log/log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/log/log.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/checkers/src/checker_board.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/checker_board.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkers/src/load_board.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/load_board.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/checkers/src/main_window.py" beforeDir="false" afterPath="$PROJECT_DIR$/checkers/src/main_window.py" afterDir="false" />
     </list>
@@ -174,10 +176,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.main_window" />
-        <item itemvalue="Python.load_board" />
         <item itemvalue="Python.checker_board (1)" />
-        <item itemvalue="Python.mode_enumerate" />
         <item itemvalue="Python.checker_board_widget" />
+        <item itemvalue="Python.load_board" />
+        <item itemvalue="Python.mode_enumerate" />
       </list>
     </recent_temporary>
   </component>
@@ -309,7 +311,14 @@
       <option name="project" value="LOCAL" />
       <updated>1686397194675</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="6.10&#10;完工">
+      <created>1686404051303</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1686404051303</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -346,6 +355,13 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/checkers/src/checker_board.py</url>
+          <line>114</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
       <default-breakpoints>
         <breakpoint type="python-exception">
           <properties notifyOnTerminate="true" exception="BaseException">

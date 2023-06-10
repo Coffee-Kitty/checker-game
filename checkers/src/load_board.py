@@ -138,15 +138,15 @@ def load_board_drawBoard(load_board: str, mode: Three_Mode) -> CheckerBoard:
     for i in range(board.board_width_check_nums):
         for j in range(board.board_height_check_nums):
             if white[i][j] == 1:
-                board.board[board.white_color][i][j] = 1
-                board.white_color_check.add((i, j))
+                board.board[board.white_color][i][board.board_width_check_nums-1-j] = 1
+                board.white_color_check.add((i, board.board_width_check_nums-1-j))
             elif white[i][j] == 2:
-                board.board[board.white_color][i][j] = 2
-                board.white_boss_check.add((i, j))
+                board.board[board.white_color][i][board.board_width_check_nums-1-j] = 2
+                board.white_boss_check.add((i, board.board_width_check_nums-1-j))
             elif black[i][j] == 1:
-                board.board[board.black_color][i][j] = 1
-                board.black_color_check.add((i, j))
+                board.board[board.black_color][i][board.board_width_check_nums-1-j] = 1
+                board.black_color_check.add((i, board.board_width_check_nums-1-j))
             elif black[i][j] == 2:
-                board.board[board.black_color][i][j] = 2
-                board.black_boss_check.add((i, j))
+                board.board[board.black_color][i][board.board_width_check_nums-1-j] = 2
+                board.black_boss_check.add((i, board.board_width_check_nums-1-j))
     return board
