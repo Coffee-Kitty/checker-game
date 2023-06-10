@@ -37,24 +37,98 @@ def load_board_drawBoard(load_board: str, mode: Three_Mode) -> CheckerBoard:
                         continue
                     tem.append(int(cur))
                 white.append(tem)
-    # elif mode == Three_Mode.mode2_OneToN_transition:
-    #     for num, line in enumerate(lines):
-    #         if num >= board.board_height_check_nums:
-    #             tem = []
-    #             cur_line = line.split(", ")
-    #             for i, cur in enumerate(cur_line):
-    #                 if i >= board.board_height_check_nums:
-    #                     continue
-    #                 tem.append(int(cur))
-    #             black.append(tem)
-    #         else:
-    #             tem = []
-    #             cur_line = line.split(", ")
-    #             for i, cur in enumerate(cur_line):
-    #                 if i >= board.board_height_check_nums:
-    #                     continue
-    #                 tem.append(int(cur))
-    #             white.append(tem)
+    elif mode == Three_Mode.mode2_OneToN_transition:
+        """
+        white:99,87\n
+        white_boss:9\n
+        black:0\n
+        black_boss:91
+        """
+        for i in range(CheckerBoard.board_width_check_nums):
+            tem1 = []
+            tem2 = []
+            for j in range(CheckerBoard.board_height_check_nums):
+                tem1.append(0)
+                tem2.append(0)
+            black.append(tem1)
+            white.append(tem2)
+
+        for num, line in enumerate(lines):
+            if num == 0:
+                line = line.replace("white:", "")
+                cur_line = line.split(",")
+                for i, cur in enumerate(cur_line):
+                    cur = int(cur)
+                    # 11 - > (1,1)
+                    pos_X = int(cur / CheckerBoard.board_width_check_nums)
+                    pos_Y = int(cur % CheckerBoard.board_height_check_nums)
+                    white[pos_X][pos_Y] = 1
+            elif num == 1:
+                line = line.replace("white_boss:", "")
+                cur_line = line.split(",")
+                for i, cur in enumerate(cur_line):
+                    cur = int(cur)
+                    # 11 - > (1,1)
+                    pos_X = int(cur / CheckerBoard.board_width_check_nums)
+                    pos_Y = int(cur % CheckerBoard.board_height_check_nums)
+                    white[pos_X][pos_Y] = 2
+            elif num == 2:
+                line = line.replace("black:", "")
+                cur_line = line.split(",")
+                for i, cur in enumerate(cur_line):
+                    cur = int(cur)
+                    # 11 - > (1,1)
+                    pos_X = int(cur / CheckerBoard.board_width_check_nums)
+                    pos_Y = int(cur % CheckerBoard.board_height_check_nums)
+                    black[pos_X][pos_Y] = 1
+            elif num == 3:
+                line = line.replace("black_boss:", "")
+                cur_line = line.split(",")
+                for i, cur in enumerate(cur_line):
+                    cur = int(cur)
+                    # 11 - > (1,1)
+                    pos_X = int(cur / CheckerBoard.board_width_check_nums)
+                    pos_Y = int(cur % CheckerBoard.board_height_check_nums)
+                    black[pos_X][pos_Y] = 2
+    else:
+        for i in range(CheckerBoard.board_width_check_nums):
+            tem1 = []
+            tem2 = []
+            for j in range(CheckerBoard.board_height_check_nums):
+                tem1.append(0)
+                tem2.append(0)
+            black.append(tem1)
+            white.append(tem2)
+
+        for num, line in enumerate(lines):
+            if num == 0:
+                line = line.replace("white:", "")
+                cur_line = line.split(",")
+                for i, cur in enumerate(cur_line):
+                    pos_X = ord(cur[0]) - 65
+                    pos_Y = ord(cur[1]) - 65
+                    white[pos_X][pos_Y] = 1
+            elif num == 1:
+                line = line.replace("white_boss:", "")
+                cur_line = line.split(",")
+                for i, cur in enumerate(cur_line):
+                    pos_X = ord(cur[0]) - 65
+                    pos_Y = ord(cur[1]) - 65
+                    white[pos_X][pos_Y] = 2
+            elif num == 2:
+                line = line.replace("black:", "")
+                cur_line = line.split(",")
+                for i, cur in enumerate(cur_line):
+                    pos_X = ord(cur[0]) - 65
+                    pos_Y = ord(cur[1]) - 65
+                    black[pos_X][pos_Y] = 1
+            elif num == 3:
+                line = line.replace("black_boss:", "")
+                cur_line = line.split(",")
+                for i, cur in enumerate(cur_line):
+                    pos_X = ord(cur[0]) - 65
+                    pos_Y = ord(cur[1]) - 65
+                    black[pos_X][pos_Y] = 2
     # 然后根据black，white棋盘最好CheckerBoard类的使用
     board.board = np.zeros(shape=(2, board.board_width_check_nums, board.board_height_check_nums), dtype=np.int32)
     board.black_boss_check.clear()
